@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,channels,norm,n_subjects,n_holdout,subs_apartados
+all_openbmi_seed2026_comun_wbcic_global,all,2026,19440,2160,0,44,149.5,0.8277777777777777,0.6555555555555556,0.8277630112321015,"[[904, 176], [196, 884]]",conformer,682946,/root/ws/ckpt_avance_7/conformer_epochs_cache_ica_ea45/all/all_openbmi_seed2026_comun_wbcic_global.pt,6f16811d008d,comun_wbcic,global,54,0,

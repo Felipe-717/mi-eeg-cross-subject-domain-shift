@@ -1,0 +1,9 @@
+data/
+checkpoints*/
+*.pt
+*.ckpt
+*.npz
+.env
+__pycache__/
+.pytest_cache/
+tmp/

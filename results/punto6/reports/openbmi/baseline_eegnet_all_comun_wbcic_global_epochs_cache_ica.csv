@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,channels,norm,n_subjects
+all_openbmi_seed2026_comun_wbcic_global,all,2026,19440,2160,0,77,372.3,0.799074074074074,0.5981481481481481,0.7990630487269534,"[[855, 225], [209, 871]]",eegnet,2626,/raw/checkpoints/eegnet_epochs_cache_ica/all/all_openbmi_seed2026_comun_wbcic_global.pt,221b9bb4d26a,comun_wbcic,global,54

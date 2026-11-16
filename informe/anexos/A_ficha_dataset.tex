@@ -1,0 +1,64 @@
+\chapter{Ficha del conjunto de datos}
+\label{anexo:dataset}
+
+Caracterización de \openbmi{} \cite{lee2019} (Actividad 1.5), verificada sobre los
+54 sujetos.
+
+\begin{table}[H]
+\centering
+\caption{Identificación del conjunto de datos.}
+\begin{tabular}{p{4.2cm}p{9.5cm}}
+\toprule
+Nombre & \openbmi{}  \textit{EEG dataset and OpenBMI toolbox for three BCI paradigms} \\
+Identificador (MOABB) & \texttt{Lee2019\_MI} \\
+Referencia & \textit{GigaScience} \textbf{8}(5), giz002, 2019 \cite{lee2019} \\
+Paradigma usado & Imaginación motora (el corpus incluye además ERP y SSVEP) \\
+Acceso & GigaDB, a través de MOABB 1.5.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Estructura del conjunto de datos.}
+\begin{tabular}{p{4.2cm}p{9.5cm}}
+\toprule
+Sujetos & 54 \\
+Sesiones por sujeto & 2 (días distintos) \\
+Ejecuciones por sesión & 2 (\textit{offline} y \textit{online}) \\
+Ensayos por sujeto & 400 \\
+Total de ensayos & 21\,600 \\
+Clases & \texttt{left\_hand}, \texttt{right\_hand} \\
+Balance de clases & 200 / 200 en los 54 sujetos, sin excepción \\
+Nivel de azar & 0.50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Adquisición y preprocesamiento.}
+\begin{tabular}{p{4.2cm}p{9.5cm}}
+\toprule
+Canales EEG & 62 (se excluyen \texttt{EMG1}--\texttt{EMG4} y \texttt{STI\,014}) \\
+Frecuencia nativa & \hz{1000} \\
+Montaje & \texttt{standard\_1005} \\
+Referencia original & Nasión \\
+Frecuencia tras preprocesamiento & \hz{200} \\
+Ventana de modelado & \seg{0.0}--\seg{4.0} (801 muestras) \\
+Integridad & verificada en los 54 sujetos: sin NaN/inf; formas y balance conformes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section*{Ausencia en los corpus de preentrenamiento}
+
+Por incluir el estudio modelos fundacionales, se verificó que \openbmi{} no figure
+en las fuentes de preentrenamiento declaradas: no aparece en el apéndice de
+conjuntos de datos de LaBraM que sí lista BCI Competition IV-1 y EEG Motor
+Movement/Imagery ni en las fuentes declaradas de EEGMamba. La formulación
+defendible es \emph{``no se encontró en las fuentes de preentrenamiento
+declaradas''}, no una garantía de ausencia de contaminación.
+
+
+

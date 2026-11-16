@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,sub,fold,channels,norm
+within_sub-01_fold0_seed2026_completo_global,within,2026,256,64,80,65,74.5,0.6625,0.32499999999999996,0.6620247222656861,"[[25, 15], [12, 28]]",eegnet,2898,data\processed\openbmi\checkpoints\eegnet\within\within_sub-01_fold0_seed2026_completo_global.pt,edd7899e3590,sub-01,0,completo,global

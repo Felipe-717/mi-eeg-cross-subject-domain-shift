@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,n_visto,acc_visto,kappa_visto,f1_visto,dsi_acc,dsi_kappa,test_sub,fold,channels,norm
+loso_sub-02_seed2026_completo_global_linear_uv1,loso,2026,18360,800,400,30,410.0,0.5025,0.0050000000000000044,0.33886494073871043,"[[1, 199], [0, 200]]",labram,5818138,/raw/checkpoints/labram_epochs_cache_ica/loso/loso_sub-02_seed2026_completo_global_linear_uv1.pt,edd7899e3590,2040,0.5,0.0,0.3333333333333333,-0.005,,sub-02,1,completo,global

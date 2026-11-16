@@ -1,0 +1,47 @@
+\section{Contraste entre protocolos}
+\label{sec:within-vs-loso}
+
+El protocolo \loso{} supera al intra-sujeto de forma sistemática en las cuatro arquitecturas, con
+diferencias de $+0.092$ a $+0.145$ y mejoras en $44$ a $51$ de los $54$ sujetos
+(tabla~\ref{tab:within-loso}).
+
+\begin{table}[H]
+\centering
+\caption{Contraste entre validación intra-sujeto y \loso{}, pareado por participante, con la media
+de las tres semillas de cada participante en los dos protocolos. El intervalo es de percentiles del
+remuestreo de participantes.}
+\label{tab:within-loso}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+ & \textbf{\eegnet{}} & \textbf{Conformer} & \textbf{LaBraM} & \textbf{EEGMamba} \\
+\midrule
+Exactitud intra-sujeto & 0.634 & 0.602 & 0.663 & 0.571 \\
+Exactitud \loso{} & 0.761 & 0.747 & 0.755 & 0.715 \\
+\midrule
+Diferencia & $+0.126$ & $+0.144$ & $+0.092$ & $+0.145$ \\
+IC $95$\,\% & $[+0.092,\ +0.159]$ & $[+0.106,\ +0.180]$ & $[+0.061,\ +0.120]$ & $[+0.117,\ +0.170]$ \\
+Sujetos que mejoran con \loso{} & 46 / 54 & 48 / 54 & 44 / 54 & 51 / 54 \\
+Wilcoxon pareado & $<0.001$ & $<0.001$ & $<0.001$ & $<0.001$ \\
+$r$ & 0.75 & 0.73 & 0.66 & 0.81 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+La inversión respecto del patrón habitual de la literatura, en el que el desempeño inter-sujeto cae
+por debajo del intra-sujeto \cite{zhu2025hafusenet,li2026survey,brookshire2024}, es compatible con
+que la comparación entre protocolos mezcle el cambio de dominio con el volumen de datos de
+entrenamiento (unos 18\,000 ensayos frente a 144) y con el procedimiento de evaluación: el
+intra-sujeto determina la parada temprana sobre 36 ensayos y evalúa sobre 20, frente a 800 y 400
+en \loso{} (sección~\ref{sec:seleccion-intra}). Con \eegnet{}, la ecuación~\eqref{eq:dsi-clasico} da
+una degradación \emph{negativa}:
+
+\begin{equation*}
+\mathrm{DSI}_{\text{clásico}} = \frac{0.6343 - 0.7606}{0.6343} = -0.199
+\end{equation*}
+
+Los valores de las cuatro arquitecturas ($-0.20$, $-0.24$, $-0.14$ y $-0.25$ con las medias de la
+tabla~\ref{tab:conformer}) no siguen el tamaño de los modelos y dependen del procedimiento de selección
+del modelo, de modo que el indicador clásico no sirve para ordenarlas ni como medida de robustez.
+

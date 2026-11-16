@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,channels,norm,n_subjects
+all_openbmi_seed2026_comun_wbcic_global_flatten_uv1_lr0.001,all,2026,19440,2160,0,36,1950.2,0.7555555555555555,0.5111111111111111,0.7555547172658342,"[[818, 262], [266, 814]]",eegmamba,3349245,/raw/checkpoints/eegmamba_epochs_cache_ica/all/all_openbmi_seed2026_comun_wbcic_global_flatten_uv1_lr0.001.pt,eabca26d5bdf,comun_wbcic,global,54

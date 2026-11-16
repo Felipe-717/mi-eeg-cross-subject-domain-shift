@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,channels,norm,n_subjects,n_holdout,subs_apartados
+all_openbmi_seed2026_comun_wbcic_global_hold10s2026,all,2026,15840,1760,0,165,296.1,0.8232954545454545,0.6465909090909091,0.8230541075685942,"[[692, 188], [123, 757]]",eegnet,2626,/root/ws/ckpt_avance_7/eegnet_epochs_cache_ica_ea45/all/all_openbmi_seed2026_comun_wbcic_global_hold10s2026.pt,221b9bb4d26a,comun_wbcic,global,44,10,sub-04 sub-07 sub-13 sub-17 sub-30 sub-34 sub-36 sub-47 sub-51 sub-52

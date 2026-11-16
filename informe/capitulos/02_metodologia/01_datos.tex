@@ -1,0 +1,85 @@
+\section{Fase 1: selección de los conjuntos de datos}
+\label{sec:fase1}
+
+\subsection{Criterios de inclusión}
+
+Se operacionalizaron seis criterios de inclusión, más uno adicional propio
+(tabla~\ref{tab:criterios}):
+
+\begin{table}[H]
+\centering
+\caption{Criterios de selección del conjunto de datos.}
+\label{tab:criterios}
+\begin{tabular}{p{3.6cm}p{3.3cm}p{6.2cm}}
+\toprule
+\textbf{Criterio} & \textbf{Umbral} & \textbf{Justificación} \\
+\midrule
+Diversidad inter-sujeto & $\geq 20$ sujetos & A mayor número de usuarios, mayor variabilidad inter-sujeto; se requiere una cantidad que permita el análisis estadístico comparativo entre arquitecturas \\
+Número de tareas mentales (clases) & $\geq 2$, lateralizadas & Mínimo para una tarea de clasificación; la lateralización da un contraste motor interpretable \\
+Resolución temporal     & $\geq \hz{250}$ nativos & Permite remuestrear a \hz{200} conservando las bandas mu y beta \\
+Resolución espacial     & $\geq 32$ canales & Mayor densidad de información de la actividad cerebral asociada a cada tarea mental \\
+Señales para control de artefactos & EOG/ECG/EMG dedicadas o proxy frontal & Permiten identificar y eliminar la contaminación ocular y muscular; \openbmi{} no incluye EOG dedicado y se emplean canales frontales como aproximación \\
+Metadatos               & Sesión, \textit{run}, temporización & Separa el cambio inter-sujeto del inter-sesión \\
+\midrule
+\textit{Adicional} & Resultados publicados & Permite verificar la lectura de los datos contra la literatura \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Conjunto seleccionado}
+
+Se evaluaron cinco conjuntos de datos públicos frente a los criterios anteriores.
+La tabla~\ref{tab:candidatas} resume la comparación, que constituye el soporte de la
+selección. Se seleccionaron \textbf{dos}, con papeles distintos y no
+intercambiables: \openbmi{} como conjunto principal, sobre el que se entrenan y
+comparan todas las arquitecturas, y WBCIC-SHU como conjunto de \textbf{validación
+externa}, que no interviene en ninguna decisión de diseño y solo se emplea para medir
+si lo aprendido en el primero se mantiene bajo el cambio de dominio.
+
+\begin{table}[H]
+\centering
+\caption{Comparación de los conjuntos de datos evaluados frente a los criterios de
+selección. ($\checkmark$ cumple, $\times$ no cumple.) Las cifras de WBCIC-SHU
+corresponden a su subconjunto de dos clases, que es el empleado aquí.}
+\label{tab:candidatas}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccp{3.0cm}}
+\toprule
+\textbf{Conjunto de datos} & \textbf{Sujetos} & \textbf{Clases} & \textbf{Multisesión}
+  & \textbf{Línea base} & \textbf{Decisión} \\
+\midrule
+\openbmi{} \cite{lee2019} & 54  & 2    & $\checkmark$ & $\checkmark$ & \textbf{Seleccionado como principal} \\
+PhysioNet MI \cite{schalk2004} & 109 & 4 & $\times$ & $\checkmark$ & Figura en el preentrenamiento de LaBraM; \hz{160} nativos y sin eje de sesión \\
+BCI Comp. IV-2a \cite{tangermann2012} & 9 & 4 & $\checkmark$ & $\checkmark$ & Pocos sujetos para validación \textit{Leave-One-Subject-Out} (\loso{}) ($<20$) \\
+MIND \cite{feng2026mind}  & 30  & 4    & $\times$     & $\times$     & \loso{} en nivel de azar; sin línea base replicable \\
+WBCIC-SHU \cite{yang2025wbcic} & 51 & 2 & $\checkmark$ & $\checkmark$ & \textbf{Seleccionado para la validación externa} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Se seleccionó \openbmi{} \cite{lee2019}: 54 sujetos, 2 clases (mano izquierda /
+mano derecha), 62 canales EEG, 2 sesiones por sujeto, 400 ensayos por sujeto,
+frecuencia de muestreo nativa de \hz{1000}. Es el de mayor número de sujetos entre
+las candidatas que cumplen todos los criterios y no figuran en el preentrenamiento de los
+modelos fundacionales, dispone de líneas base publicadas que permiten verificar la lectura de los
+datos (sección~\ref{sec:replica}) y separa explícitamente sesión de \textit{run}. Se
+excluyeron, además, los conjuntos empleados en el preentrenamiento de los modelos
+fundacionales, para reducir el riesgo de contaminación entre preentrenamiento y evaluación. La exclusión
+se basa en la lista de conjuntos que declaran sus autores; en el caso de LaBraM, esa lista
+incluye además datos propios no detallados, cuya composición no puede comprobarse.
+
+Como conjunto de validación externa se seleccionó el subconjunto de dos clases de
+WBCIC-SHU \cite{yang2025wbcic}: 51 participantes, 2 clases (mano izquierda / mano derecha),
+59 canales EEG y 3 sesiones por sujeto, registrado a \hz{1000} y distribuido por sus
+autores en una versión preprocesada a \hz{250}, que es la empleada aquí. Cumple
+los mismos criterios que \openbmi{} y añade el requisito que aquí importa, ser
+\textbf{independiente}: se registró en otra institución, con otro amplificador y otro
+montaje, de modo que la diferencia entre ambos es un cambio de dominio real y no una
+partición distinta del mismo registro. No participa en ninguna decisión de diseño ni de
+configuración: el preprocesamiento se armonizó con el del conjunto principal
+(sección~\ref{sec:wbcic-preproc}) y su papel se limita a medir.
+
+La caracterización completa del conjunto de datos estructura, adquisición y
+verificación de integridad se presenta en el Apéndice~\ref{anexo:dataset}.
+

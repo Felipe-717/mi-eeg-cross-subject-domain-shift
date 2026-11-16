@@ -1,0 +1,9 @@
+condicion,solo_previo,solo_avance_7
+transf_train54_base_eegnet,[],"['n_holdout', 'subs_apartados']"
+transf_nativo_base_eegnet,[],"['n_holdout', 'subs_apartados']"
+transf_train54_base_conformer,[],"['n_holdout', 'subs_apartados']"
+transf_nativo_base_conformer,[],"['n_holdout', 'subs_apartados']"
+transf_train54_base_labram,[],"['n_holdout', 'subs_apartados']"
+transf_nativo_base_labram,[],"['n_holdout', 'subs_apartados']"
+transf_train54_base_eegmamba,[],"['n_holdout', 'subs_apartados']"
+transf_nativo_base_eegmamba,[],"['n_holdout', 'subs_apartados']"

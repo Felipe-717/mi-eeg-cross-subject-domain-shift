@@ -1,0 +1,3 @@
+protocolo,contraste,p_calculado,p_estadistica_py,r_calculado,r_estadistica_py,dif_mediana_calculada,dif_mediana_estadistica_py,coincide
+within,"eegnet - conformer, semilla 2026",0.0004210308407994355,0.000421,0.47990102808324314,0.48,0.018750000000000044,0.0188,True
+loso,"eegnet - conformer, semilla 2026",0.11799276084134996,0.118,0.21273198365496038,0.213,0.006249999999999978,0.0062,True

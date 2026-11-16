@@ -1,0 +1,49 @@
+arq,variante,tabla,filas,semillas,semillas_ok,nan_acc,cfg_hash,regimen,duplicados,sujetos,n_epochs
+eegnet,base,cruzado,459,"[2026, 2027, 2028]",True,0,221b9bb4d26a,avance_7|previo,0,51,
+eegnet,base,h44_openbmi,90,"[2026, 2027, 2028]",True,0,221b9bb4d26a,avance_7|previo,0,10,
+eegnet,base,h44_wbcic,459,"[2026, 2027, 2028]",True,0,221b9bb4d26a,avance_7|previo,0,51,
+eegnet,base,nativo,3,"[2026, 2027, 2028]",True,0,221b9bb4d26a,avance_7|previo,0,51,82|182|136
+eegnet,base,train54,3,"[2026, 2027, 2028]",True,0,221b9bb4d26a,avance_7|previo,0,54,77|122|137
+eegnet,base,h44,3,"[2026, 2027, 2028]",True,0,221b9bb4d26a,avance_7|previo,0,44,91|99|119
+eegnet,ea,cruzado,153,[2026],True,0,221b9bb4d26a,avance_7,0,51,
+eegnet,ea,h44_openbmi,30,[2026],True,0,221b9bb4d26a,avance_7,0,10,
+eegnet,ea,h44_wbcic,153,[2026],True,0,221b9bb4d26a,avance_7,0,51,
+eegnet,ea,nativo,1,[2026],True,0,221b9bb4d26a,avance_7,0,51,62
+eegnet,ea,train54,1,[2026],True,0,221b9bb4d26a,avance_7,0,54,200
+eegnet,ea,h44,1,[2026],True,0,221b9bb4d26a,avance_7,0,44,165
+conformer,base,cruzado,459,"[2026, 2027, 2028]",True,0,6f16811d008d,avance_7|previo,0,51,
+conformer,base,h44_openbmi,90,"[2026, 2027, 2028]",True,0,6f16811d008d,avance_7|previo,0,10,
+conformer,base,h44_wbcic,459,"[2026, 2027, 2028]",True,0,6f16811d008d,avance_7|previo,0,51,
+conformer,base,nativo,3,"[2026, 2027, 2028]",True,0,6f16811d008d,avance_7|previo,0,51,59|74|65
+conformer,base,train54,3,"[2026, 2027, 2028]",True,0,6f16811d008d,avance_7|previo,0,54,98|74|71
+conformer,base,h44,3,"[2026, 2027, 2028]",True,0,6f16811d008d,avance_7|previo,0,44,60|51|85
+conformer,ea,cruzado,153,[2026],True,0,6f16811d008d,avance_7,0,51,
+conformer,ea,h44_openbmi,30,[2026],True,0,6f16811d008d,avance_7,0,10,
+conformer,ea,h44_wbcic,153,[2026],True,0,6f16811d008d,avance_7,0,51,
+conformer,ea,nativo,1,[2026],True,0,6f16811d008d,avance_7,0,51,39
+conformer,ea,train54,1,[2026],True,0,6f16811d008d,avance_7,0,54,44
+conformer,ea,h44,1,[2026],True,0,6f16811d008d,avance_7,0,44,50
+labram,base,cruzado,459,"[2026, 2027, 2028]",True,0,aad8ea7882e6,avance_7|previo,0,51,
+labram,base,h44_openbmi,90,"[2026, 2027, 2028]",True,0,aad8ea7882e6,avance_7|previo,0,10,
+labram,base,h44_wbcic,459,"[2026, 2027, 2028]",True,0,aad8ea7882e6,avance_7|previo,0,51,
+labram,base,nativo,3,"[2026, 2027, 2028]",True,0,aad8ea7882e6,avance_7|previo,0,51,49|41|46
+labram,base,train54,3,"[2026, 2027, 2028]",True,0,aad8ea7882e6,avance_7|previo,0,54,39|41|38
+labram,base,h44,3,"[2026, 2027, 2028]",True,0,aad8ea7882e6,avance_7|previo,0,44,37|41|39
+labram,ea,cruzado,153,[2026],True,0,aad8ea7882e6,avance_7,0,51,
+labram,ea,h44_openbmi,30,[2026],True,0,aad8ea7882e6,avance_7,0,10,
+labram,ea,h44_wbcic,153,[2026],True,0,aad8ea7882e6,avance_7,0,51,
+labram,ea,nativo,1,[2026],True,0,aad8ea7882e6,avance_7,0,51,40
+labram,ea,train54,1,[2026],True,0,aad8ea7882e6,avance_7,0,54,39
+labram,ea,h44,1,[2026],True,0,aad8ea7882e6,avance_7,0,44,43
+eegmamba,base,cruzado,459,"[2026, 2027, 2028]",True,0,eabca26d5bdf,avance_7|previo,0,51,
+eegmamba,base,h44_openbmi,90,"[2026, 2027, 2028]",True,0,eabca26d5bdf,avance_7|previo,0,10,
+eegmamba,base,h44_wbcic,459,"[2026, 2027, 2028]",True,0,eabca26d5bdf,avance_7|previo,0,51,
+eegmamba,base,nativo,3,"[2026, 2027, 2028]",True,0,eabca26d5bdf,avance_7|previo,0,51,31|40|54
+eegmamba,base,train54,3,"[2026, 2027, 2028]",True,0,eabca26d5bdf,avance_7|previo,0,54,36|52|36
+eegmamba,base,h44,3,"[2026, 2027, 2028]",True,0,eabca26d5bdf,avance_7|previo,0,44,30|54|33
+eegmamba,ea,cruzado,153,[2026],True,0,eabca26d5bdf,avance_7,0,51,
+eegmamba,ea,h44_openbmi,30,[2026],True,0,eabca26d5bdf,avance_7,0,10,
+eegmamba,ea,h44_wbcic,153,[2026],True,0,eabca26d5bdf,avance_7,0,51,
+eegmamba,ea,nativo,1,[2026],True,0,eabca26d5bdf,avance_7,0,51,32
+eegmamba,ea,train54,1,[2026],True,0,eabca26d5bdf,avance_7,0,54,31
+eegmamba,ea,h44,1,[2026],True,0,eabca26d5bdf,avance_7,0,44,30

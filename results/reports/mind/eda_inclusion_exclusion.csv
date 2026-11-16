@@ -1,0 +1,31 @@
+sub,mi_l2r,mi_t2b,mi_ul2lr,mi_ur2ll,total_MI,archivos_completos,balance_crudo_ok,recortado,incluir,nota
+sub-01,30,30,30,30,120,True,True,False,True,OK
+sub-02,30,30,30,30,120,True,True,False,True,OK
+sub-03,30,30,30,30,120,True,True,False,True,OK
+sub-04,30,31,30,32,123,True,False,True,True,recortado a 10/clase/run (tenía eventos extra)
+sub-05,30,30,30,30,120,True,True,False,True,OK
+sub-06,30,30,30,30,120,True,True,False,True,OK
+sub-07,30,30,30,30,120,True,True,False,True,OK
+sub-08,30,30,30,30,120,True,True,False,True,OK
+sub-09,30,30,30,30,120,True,True,False,True,OK
+sub-10,30,30,30,30,120,True,True,False,True,OK
+sub-11,30,30,30,30,120,True,True,False,True,OK
+sub-12,30,30,30,30,120,True,True,False,True,OK
+sub-13,30,30,30,30,120,True,True,False,True,OK
+sub-14,30,30,30,30,120,True,True,False,True,OK
+sub-15,30,30,30,30,120,True,True,False,True,OK
+sub-16,30,30,30,30,120,True,True,False,True,OK
+sub-17,30,30,30,30,120,True,True,False,True,OK
+sub-18,30,30,30,30,120,True,True,False,True,OK
+sub-19,39,39,30,30,138,True,False,True,True,recortado a 10/clase/run (tenía eventos extra)
+sub-20,30,30,30,30,120,True,True,False,True,OK
+sub-21,30,30,30,30,120,True,True,False,True,OK
+sub-22,30,30,30,30,120,True,True,False,True,OK
+sub-23,30,30,30,30,120,True,True,False,True,OK
+sub-24,30,30,30,30,120,True,True,False,True,OK
+sub-25,30,30,30,30,120,True,True,False,True,OK
+sub-26,30,30,30,30,120,True,True,False,True,OK
+sub-27,30,30,30,30,120,True,True,False,True,OK
+sub-28,30,30,30,30,120,True,True,False,True,OK
+sub-29,30,30,30,30,120,True,True,False,True,OK
+sub-30,30,30,30,30,120,True,True,False,True,OK

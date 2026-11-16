@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,n_visto,acc_visto,kappa_visto,f1_visto,dsi_acc,dsi_kappa,test_sub,fold,channels,norm
+loso_sub-02_seed2027_completo_global,loso,2027,18360,800,400,46,3417.8,0.7725,0.5449999999999999,0.7646617659419025,"[[191, 9], [82, 118]]",conformer,710146,/raw/checkpoints/conformer_epochs_cache_ica/loso/loso_sub-02_seed2027_completo_global.pt,a59e0e313eaf,2040,0.7901960784313725,0.580392156862745,0.7900489674137299,0.0224,0.061,sub-02,1,completo,global

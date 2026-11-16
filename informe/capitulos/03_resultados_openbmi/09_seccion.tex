@@ -1,0 +1,71 @@
+\section{Alineamiento euclidiano y reflexión de canales en \loso{}}
+\label{sec:f6f8}
+
+Con una semilla, el alineamiento euclidiano aumenta la exactitud \loso{} de forma inequívoca solo en
+EEGMamba ($+0.0463$) y en LaBraM ($+0.0249$), y la reflexión de canales tiene un efecto pequeño y poco
+consistente (tabla~\ref{tab:f6f8}). Los contrastes son frente a la base \loso{} de la semilla $2026$; como
+lectura de sensibilidad se repiten frente a la media de las semillas $2027$ y $2028$, que sí tuvieron
+recorte.
+
+\begin{table}[H]
+\centering
+\caption{\loso{} con alineamiento euclidiano y con reflexión de canales menos la base \loso{} de la
+semilla $2026$, sobre los $54$ participantes; $p_{\text{Holm}}$ dentro de la familia de cuatro. Margen mín. y
+Lectura como en la tabla~\ref{tab:ablaciones-f4}, con las cotas de la sección~\ref{sec:confusor}.}
+\label{tab:f6f8}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccl}
+\toprule
+\textbf{Variante} & \textbf{Arq.} & Dif. media & IC $95$\,\% & $p_{\text{Holm}}$ & $r$ & Margen mín. & Lectura \\
+\midrule
+\multicolumn{8}{l}{\textit{Alineamiento euclidiano}} \\
+ & \eegnet{} & $+0.0109$ & $[-0.0070,\ +0.0261]$ & 0.013 & 0.34 & 0.024 & supera la cota \\
+ & Conformer & $+0.0173$ & $[-0.0035,\ +0.0363]$ & 0.003 & 0.43 & 0.034 & no interpretable \\
+ & LaBraM & $+0.0249$ & $[+0.0130,\ +0.0363]$ & $<0.001$ & 0.52 & 0.035 & supera la cota \\
+ & EEGMamba & $+0.0463$ & $[+0.0309,\ +0.0610]$ & $<0.001$ & 0.71 & 0.059 & sin cambio de recorte \\
+\midrule
+\multicolumn{8}{l}{\textit{Reflexión de canales}} \\
+ & \eegnet{} & $-0.0025$ & $[-0.0111,\ +0.0055]$ & 0.77 & 0.04 & 0.010 & no interpretable \\
+ & Conformer & $+0.0144$ & $[+0.0029,\ +0.0256]$ & 0.019 & 0.38 & 0.024 & no interpretable \\
+ & LaBraM & $+0.0106$ & $[+0.0004,\ +0.0206]$ & 0.13 & 0.27 & 0.019 & no interpretable \\
+ & EEGMamba & $+0.0076$ & $[-0.0005,\ +0.0156]$ & 0.14 & 0.25 & 0.014 & sin cambio de recorte \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\paragraph{Alineamiento euclidiano.} El efecto más claro es el de EEGMamba ($+0.0463$, $r = 0.71$; $46$
+participantes mejoran y $6$ empeoran), el único contraste sin cambio de recorte. En LaBraM supera la cota
+($0.0142$); en \eegnet{} ($+0.0109$) la supera solo por $0.0005$, su intervalo al $95$\,\% incluye el cero y
+es equivalente a cero dentro de $\pm 0.03$ (margen $0.024$); en el Conformer ($+0.0173$) queda bajo la cota
+($0.0198$) y su lectura principal es no interpretable, con $+0.0245$ ($p_{\text{Holm}} = 0.001$) en la
+sensibilidad. Las dos lecturas coinciden en dirección y significación en las cuatro. Con la familia secundaria
+de ocho contrastes, el de \eegnet{} deja de ser significativo ($p_{\text{Holm}} = 0.051$).
+
+\paragraph{El alineamiento no cambia de forma detectable la brecha entre vistos y no vistos.} Eleva la
+exactitud de ambos conjuntos, pero la caída entre vistos y no vistos no cambia: de $-0.0077$ a $+0.0046$
+según la arquitectura, con $p$ de $0.33$ a $0.94$ y $r$ de $0.01$ a $0.13$. El \dsi{} pasa de $0.0257$ a
+$0.0310$ en \eegnet{}, de $0.0439$ a $0.0366$ en el Conformer, de $0.0554$ a $0.0560$ en LaBraM y de $0.0343$
+a $0.0228$ en EEGMamba. El alineamiento no puede presentarse como corrector de la brecha, y el \dsi{}
+clásico, que ya era negativo, se vuelve más negativo porque la referencia intra-sujeto no se alineó: mide el
+aumento de \loso{}, no una recuperación.
+
+\paragraph{Reflexión de canales.} En \loso{} el efecto es pequeño y poco consistente: $-0.0025$ en \eegnet{}
+($p_{\text{Holm}} = 0.77$), $+0.0144$ en el Conformer ($0.019$), $+0.0106$ en LaBraM ($0.13$) y $+0.0076$ en
+EEGMamba ($0.14$). Las lecturas principal y de sensibilidad discrepan en significación en LaBraM y EEGMamba y
+en el signo en \eegnet{}, y las cuatro son equivalentes a la base dentro de $\pm 0.03$. Con una semilla, la
+evidencia de un beneficio en \loso{} es débil; en el protocolo intra-sujeto, con $144$ ensayos, el beneficio
+fue mayor (sección~\ref{sec:ablaciones-f4}), lo que es coherente con un efecto de regularización mayor con
+pocos datos, aunque este diseño no lo contrasta.
+
+\paragraph{Participantes de bajo rendimiento (exploratorio).} La ganancia del alineamiento es mayor en
+quienes parten de $0.70$ o menos en \eegnet{} ($+0.032$ frente a $+0.001$) y en el Conformer ($+0.043$ frente
+a $+0.001$), pero la correlación de Spearman entre ganancia y nivel no es significativa tras Holm
+($p_{\text{Holm}} = 0.345$ y $0.283$) y en LaBraM y EEGMamba no hay concentración. Con grupos de $15$ a $28$
+participantes es un resultado para generar hipótesis.
+
+Los resultados con alineamiento no son \textit{zero-shot} en sentido estricto, porque el alineamiento usa
+todos los segmentos sin etiqueta del participante de prueba.
+

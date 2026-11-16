@@ -1,0 +1,72 @@
+\section{Calibración con pocos ensayos del sujeto no visto}
+\label{sec:fewshot}
+
+\textbf{Con el procedimiento de calibración probado, fijado de antemano, no se obtuvo ganancia}: calibrar el
+modelo con $10$ o $20$ ensayos del participante no visto empeoró su exactitud (tabla~\ref{tab:fewshot}).
+Se compararon tres procedimientos (\texttt{stats}, \texttt{cabeza} y \texttt{stats+cabeza}; método en la
+sección~\ref{sec:metodo-fewshot}) frente a la referencia sin calibrar medida sobre los mismos ensayos, con
+$k = 10$ y $20$ ensayos de calibración que no se evalúan, cinco sorteos por sujeto y modelos de las semillas
+$2027$ y $2028$ (y de la $2026$ en la variante con alineamiento euclidiano).
+
+\begin{table}[H]
+\centering
+\caption{Ganancia de exactitud por la calibración (procedimiento menos sin calibrar) con $k$ ensayos, media sobre los $54$
+participantes, y entre paréntesis $p_{\text{Holm}}$ de la familia de $24$ de cada bloque. $*$: $p_{\text{Holm}} < 0.05$. Todas las
+ganancias medias son negativas.}
+\label{tab:fewshot}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Arq.} & $k$ & Sin calibrar & \texttt{stats} & \texttt{cabeza} & \texttt{stats+cabeza} \\
+\midrule
+\multicolumn{6}{l}{\textit{Modelos base, semillas 2027 y 2028 promediadas dentro del sujeto}} \\
+\eegnet{} & 10 & 0.760 & $-0.0150$\,* (0.031) & $-0.0128$\,* (0.014) & $-0.0162$\,* (0.004) \\
+ & 20 & 0.760 & $-0.0149$ (0.056) & $-0.0065$ (0.15) & $-0.0114$\,* (0.033) \\
+Conformer & 10 & 0.745 & $-0.0242$\,* (0.010) & $-0.0229$\,* ($<0.001$) & $-0.0409$\,* ($<0.001$) \\
+ & 20 & 0.744 & $-0.0226$\,* (0.026) & $-0.0039$ (0.70) & $-0.0204$\,* (0.017) \\
+LaBraM & 10 & 0.755 & $-0.0104$\,* (0.008) & $-0.0148$\,* (0.010) & $-0.0178$\,* (0.003) \\
+ & 20 & 0.755 & $-0.0108$\,* (0.008) & $-0.0078$ (0.056) & $-0.0125$\,* (0.022) \\
+EEGMamba & 10 & 0.715 & $-0.0027$ (0.71) & $-0.0113$ (0.056) & $-0.0175$\,* (0.005) \\
+ & 20 & 0.715 & $-0.0007$ (0.81) & $-0.0092$ (0.15) & $-0.0148$\,* (0.017) \\
+\midrule
+\multicolumn{6}{l}{\textit{Con alineamiento euclidiano, semilla 2026}} \\
+\eegnet{} & 10 & 0.774 & $-0.0030$ (0.21) & $-0.0108$ (0.19) & $-0.0149$\,* (0.008) \\
+ & 20 & 0.774 & $-0.0018$ (0.73) & $-0.0061$ (0.90) & $-0.0083$ (0.65) \\
+Conformer & 10 & 0.769 & $-0.0041$ (0.45) & $-0.0147$\,* (0.028) & $-0.0199$\,* ($<0.001$) \\
+ & 20 & 0.769 & $-0.0018$ (0.93) & $-0.0057$ (1.00) & $-0.0084$ (0.19) \\
+LaBraM & 10 & 0.779 & $-0.0045$ (0.21) & $-0.0096$\,* (0.046) & $-0.0103$ (0.061) \\
+ & 20 & 0.779 & $-0.0030$ (0.69) & $-0.0010$ (0.88) & $-0.0033$ (0.52) \\
+EEGMamba & 10 & 0.763 & $-0.0018$ (0.88) & $-0.0105$ (0.096) & $-0.0107$ (0.065) \\
+ & 20 & 0.763 & $-0.0011$ (1.00) & $-0.0030$ (1.00) & $-0.0041$ (1.00) \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+En los modelos base las $24$ ganancias medias son negativas (de $-0.0007$ a $-0.0409$), $16$ de ellas
+significativas tras Holm, y ningún límite superior del intervalo al $95$\,\% supera $+0.0054$; la mayor
+pérdida es la del Conformer con $k = 10$ (\texttt{stats+cabeza}, $-0.0409$, $r = 0.68$). Con alineamiento
+euclidiano las $24$ ganancias también son negativas (de $-0.0010$ a $-0.0199$), $4$ significativas tras Holm.
+En $18$ de las $24$ combinaciones de los modelos base la pérdida es equivalente a cero dentro de $\pm 0.03$.
+La dirección se repite en las dos semillas (mismo signo en $23$ de las $24$ combinaciones).
+
+Una posible explicación, no demostrada, es el sobreajuste a los pocos ensayos: en $11$ de las $12$
+combinaciones la ganancia es menos negativa con $k = 20$ que con $k = 10$. El diseño no la contrasta, y
+\texttt{stats}, que no toca ningún peso, apenas cambia con $k$, lo que sugiere que las estadísticas por canal
+del entrenamiento pueden ser más fiables que las estimadas con $10$ a $20$ ensayos. No puede concluirse que
+la calibración no sirva en general, solo que este procedimiento, en este escenario, no mejoró la exactitud.
+
+\paragraph{Participantes de bajo rendimiento (exploratorio, sin corrección).} No hay indicio de que la
+calibración ayude más a quienes parten de $0.70$ o menos; con \texttt{cabeza} pierden algo más que el resto
+(diferencia media de $-0.007$ y $-0.008$). Son $96$ contrastes sin corregir, con grupos de $14$ a $28$
+participantes, y es un resultado para generar hipótesis.
+
+\paragraph{Alcance.} Los ensayos de calibración y de evaluación proceden de las dos sesiones mezcladas del
+participante, de modo que el escenario es el más favorable a la calibración. No se probaron ajustes más
+amplios (más capas, regularización hacia la cabeza original, parada con validación interna), un $k$ mayor ni
+la calibración del modelo transferido a WBCIC-SHU. La referencia sin calibrar coincide, con una diferencia de
+a lo sumo $0.001$, con la exactitud \loso{} media de las mismas semillas.
+
+

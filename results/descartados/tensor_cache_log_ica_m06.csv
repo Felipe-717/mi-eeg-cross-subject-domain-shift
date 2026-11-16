@@ -1,0 +1,4 @@
+sub,n_trials,n_canales,n_muestras,sfreq,tmin,clases,por_sesion,por_run,cfg_hash,segundos,ica_por_run,ica_labels
+29,400,62,1401,200.0,-2.0,"{""left_hand"": 200, ""right_hand"": 200}","{""0"": 200, ""1"": 200}","{""1train"": 200, ""4test"": 200}",939056faf411,173.2,"{""0/1train"": 10, ""0/4test"": 12, ""1/1train"": 10, ""1/4test"": 9}","[""eye blink"", ""muscle artifact""]"
+7,400,62,1401,200.0,-2.0,"{""left_hand"": 200, ""right_hand"": 200}","{""0"": 200, ""1"": 200}","{""1train"": 200, ""4test"": 200}",939056faf411,161.7,"{""0/1train"": 11, ""0/4test"": 10, ""1/1train"": 9, ""1/4test"": 8}","[""eye blink"", ""muscle artifact""]"
+1,400,62,1401,200.0,-2.0,"{""left_hand"": 200, ""right_hand"": 200}","{""0"": 200, ""1"": 200}","{""1train"": 200, ""4test"": 200}",939056faf411,170.7,"{""0/1train"": 9, ""0/4test"": 7, ""1/1train"": 6, ""1/4test"": 6}","[""channel noise"", ""eye blink"", ""muscle artifact""]"

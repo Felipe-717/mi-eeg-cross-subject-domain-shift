@@ -1,0 +1,13 @@
+conjunto,referencia,metodo,filas,p_mw_menor_005,p_rho_menor_005,rho_positivo,dif_bajo_menos_alto_media,exploratorio
+base,gan2027_nivel2028,cabeza,8,1,5,6,-0.006924398355430456,True
+base,gan2027_nivel2028,stats,8,0,1,2,0.012389225802107634,True
+base,gan2027_nivel2028,stats+cabeza,8,1,2,5,0.002067735407075683,True
+base,gan2028_nivel2027,cabeza,8,3,4,8,-0.008155270934307592,True
+base,gan2028_nivel2027,stats,8,0,0,2,0.01056263030456022,True
+base,gan2028_nivel2027,stats+cabeza,8,0,2,5,0.00020696678670256968,True
+ea,nivel_cero_base_2027_28,cabeza,8,3,4,8,-0.011069760428893561,True
+ea,nivel_cero_base_2027_28,stats,8,0,0,2,0.003025840075177216,True
+ea,nivel_cero_base_2027_28,stats+cabeza,8,3,3,8,-0.010577057357302657,True
+ea,nivel_cero_ea_acoplado,cabeza,8,1,2,8,0.0024192025392505015,True
+ea,nivel_cero_ea_acoplado,stats,8,5,3,0,0.007930534715866001,True
+ea,nivel_cero_ea_acoplado,stats+cabeza,8,1,3,8,0.003248637413994569,True

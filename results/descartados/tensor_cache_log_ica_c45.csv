@@ -1,0 +1,3 @@
+sub,n_trials,n_canales,n_muestras,sfreq,tmin,clases,por_sesion,por_run,cfg_hash,segundos,ica_por_run,ica_labels
+29,400,62,1401,200.0,-2.0,"{""left_hand"": 200, ""right_hand"": 200}","{""0"": 200, ""1"": 200}","{""1train"": 200, ""4test"": 200}",0d8f7ededc32,215.6,"{""0/1train"": 7, ""0/4test"": 6, ""1/1train"": 5, ""1/4test"": 4}","[""channel noise"", ""eye blink"", ""muscle artifact""]"
+1,400,62,1401,200.0,-2.0,"{""left_hand"": 200, ""right_hand"": 200}","{""0"": 200, ""1"": 200}","{""1train"": 200, ""4test"": 200}",0d8f7ededc32,192.8,"{""0/1train"": 7, ""0/4test"": 6, ""1/1train"": 4, ""1/4test"": 9}","[""channel noise"", ""eye blink"", ""muscle artifact""]"

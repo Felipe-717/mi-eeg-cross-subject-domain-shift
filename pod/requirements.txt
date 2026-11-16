@@ -1,0 +1,38 @@
+# Versiones EXACTAS del entorno local que produjo los resultados de la Fase 2.
+#
+# No es purismo: el ICA tiene componente aleatoria. Fijamos random_state, pero una
+# version distinta de mne o mne-icalabel puede converger a componentes distintos y
+# entonces el cache de la nube NO seria el mismo que el validado localmente.
+# La fase `verify` de run.py comprueba que efectivamente lo es.
+#
+# torch NO se fija aqui: en el pod se instala la rueda que corresponda a la GPU
+# (ver setup.sh). Ninguno de estos resultados depende de la version de torch.
+
+mne==1.12.1
+mne-icalabel==0.9.0
+moabb==1.5.0
+
+numpy==2.4.6
+scipy==1.17.1
+scikit-learn==1.9.0
+pandas==3.0.3
+joblib==1.5.3
+
+# mne-icalabel corre ICLabel sobre onnxruntime
+onnxruntime==1.27.0
+
+# Modelos (fase de entrenamiento).
+# El extra [hub] añade huggingface_hub + safetensors, necesarios para cargar el
+# checkpoint preentrenado de LaBraM vía Labram.from_pretrained() / load_state_dict.
+# 1.6.1 ya trae la clase Labram (desde 1.0), from_pretrained (desde 1.3.2) y el
+# extra [hub] (desde 1.4.0): NO se sube de version para no alterar EEGNet/Conformer.
+braindecode[hub]==1.6.1
+
+# Subida del cache a Hugging Face
+huggingface-hub>=0.26
+
+# EEGMamba usa einops (rearrange) en el modelo vendorizado (src/eegmamba_vendored.py).
+# braindecode ya suele arrastrarlo, se fija explícito por claridad. Los kernels CUDA de
+# EEGMamba (mamba-ssm + causal-conv1d) NO van aquí: se compilan aparte en preparar.sh
+# (necesitan nvcc y --no-build-isolation), solo cuando el modelo es eegmamba.
+einops>=0.7

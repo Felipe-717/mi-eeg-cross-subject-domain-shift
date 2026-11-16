@@ -1,0 +1,7 @@
+fold,test_sub,n_train,n_test,acc,kappa,channels,norm,segundos
+0,sub-01,3032,119,0.2437,-0.0103,motor_ext,per_trial,50.1
+1,sub-02,3035,116,0.3103,0.0805,motor_ext,per_trial,49.5
+2,sub-03,3042,109,0.2936,0.0504,motor_ext,per_trial,49.3
+3,sub-04,3031,120,0.2083,-0.0556,motor_ext,per_trial,49.0
+4,sub-05,3038,113,0.2655,0.0211,motor_ext,per_trial,49.0
+5,sub-06,3032,119,0.2269,-0.0332,motor_ext,per_trial,49.0

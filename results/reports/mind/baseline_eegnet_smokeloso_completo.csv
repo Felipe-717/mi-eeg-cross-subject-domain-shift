@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,ckpt_path,cfg_hash,test_sub,fold,channels
+loso_sub-01_seed2026_completo,loso,2026,2795,237,119,30,388.8,0.3025210084033613,0.07066240120436595,0.2938375350140056,"[[13, 4, 6, 7], [13, 4, 4, 9], [7, 5, 8, 10], [7, 8, 3, 11]]",data\processed\mind\checkpoints\eegnet\loso\loso_sub-01_seed2026_completo.pt,edd7899e3590,sub-01,0,completo

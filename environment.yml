@@ -1,0 +1,24 @@
+name: eeg
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - torch==2.5.1+cu121
+      - mne==1.12.1
+      - braindecode==1.6.1
+      - scipy==1.17.1
+      - numpy==2.4.6
+      - pandas==3.0.3
+      - autoreject==0.4.4
+      - scikit-learn==1.9.0
+      - moabb==1.5.0
+      - mne-icalabel==0.9.0
+      - huggingface-hub==1.30.0
+      - einops==0.8.2
+      - matplotlib==3.11.1
+      - pytest==9.1.1
+      - PyYAML==6.0.3
+# Los pods de ejecucion usaron PyTorch 2.8.0 y CUDA 12.8.
+# El entorno local exportado tiene PyTorch 2.5.1+cu121; safetensors y mamba-ssm no estaban instalados.

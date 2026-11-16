@@ -1,0 +1,53 @@
+
+
+% - preámbulo -
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}                       % ¡importante! evita el timeout
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-lcroman,es-nodecimaldot]{babel}
+% es-nodecimaldot: sin esta opción, babel convierte el punto decimal en coma
+% DENTRO de modo matemático y en la misma tabla salen "0.813" y "-0,225".
+\usepackage[left=3cm,right=3cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{graphicx}
+\graphicspath{{imagenes/}{figuras/}}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{amssymb}        % \checkmark en la tabla comparativa de datasets
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}   % pies de figura/tabla mas pequenos que el texto
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{needspace}   % \needspace{Nn\baselineskip}: salta de página SOLO si
+                         % no caben N líneas. Evita títulos huérfanos al pie.
+\usepackage{csquotes}
+\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
+\addbibresource{referencias.bib}
+\usepackage[hidelinks]{hyperref}            % se carga de los últimos
+
+% Títulos de capítulo compactos: número y texto en la misma línea, sin el
+% hueco enorme que deja `report` por defecto. Quita estas dos líneas para
+% volver al aspecto original.
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]{\normalfont\huge\bfseries}{\thechapter.}{0.5em}{}
+\titlespacing*{\chapter}{0pt}{0pt}{20pt}
+
+% - comandos propios -
+\newcommand{\dsi}{\textit{IDS}}
+\newcommand{\idp}{\textit{IDP}}
+\newcommand{\loso}{LOSO}
+\newcommand{\eegnet}{EEGNet}
+\newcommand{\openbmi}{OpenBMI}
+\newcommand{\hz}[1]{#1\,Hz}
+\newcommand{\seg}[1]{#1\,s}
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}

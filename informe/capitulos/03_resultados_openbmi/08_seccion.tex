@@ -1,0 +1,116 @@
+\section{Ablaciones intra-sujeto de preprocesamiento y aumentación}
+\label{sec:ablaciones-f4}
+
+Ningún efecto de preprocesamiento o aumentación es común a las cuatro arquitecturas: la ventana corta, la
+banda $\mu+\beta$ y la reflexión de canales se asocian con una exactitud mayor en algunas y no en otras
+(tabla~\ref{tab:ablaciones-f4}). Los resultados de \eegnet{} y el Conformer están \emph{condicionados al
+régimen de entrenamiento}, porque no existe una base con recorte con la que estimar una cota
+(sección~\ref{sec:confusor}); en LaBraM la cota es de $0.0182$, y el contraste de EEGMamba no cambia de
+recorte, aunque el desplazamiento de $+0.009$ de esa arquitectura entre semillas es del orden de varios
+de los efectos de la tabla. Todas las variantes tienen una sola semilla, por lo que las equivalencias valen
+para la semilla $2026$ (el desplazamiento medio entre semillas llega a $0.008$ y $0.009$). Los efectos se
+describen como asociaciones: no se contrastó la interacción entre arquitectura y variante.
+
+\begin{table}[H]
+\centering
+\caption{Ablaciones intra-sujeto: diferencia de exactitud de la variante menos la base de la semilla
+$2026$, sobre los $54$ participantes, con intervalo al $95$\,\% de percentiles y $p_{\text{Holm}}$ dentro de la
+familia de la arquitectura (ocho contrastes en \eegnet{} y Conformer, tres en LaBraM y EEGMamba). Margen
+mín.: menor margen con el que se cumpliría la equivalencia (equivalente dentro de $\pm 0.03$ si
+es $\leq 0.030$). Lectura: \emph{sin cambio de recorte} (EEGMamba); \emph{sin cota
+estimable}, condicionado al régimen (\eegnet{} y Conformer); \emph{supera la cota} o \emph{no
+interpretable}, según la magnitud frente a la cota de $0.0182$ (LaBraM).}
+\label{tab:ablaciones-f4}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccl}
+\toprule
+\textbf{Arq.} & \textbf{Variante} & Dif. media & IC $95$\,\% & $p_{\text{Holm}}$ & Margen mín. & Lectura \\
+\midrule
+\eegnet{} & banda $\mu$ ($8$ a $13$\,Hz) & $-0.0300$ & $[-0.0635,\ +0.0032]$ & 0.49 & 0.058 & sin cota estimable \\
+ & banda $\beta$ ($13$ a $30$\,Hz) & $-0.0456$ & $[-0.0788,\ -0.0098]$ & 0.009 & 0.073 & sin cota estimable \\
+ & banda $\mu+\beta$ ($8$ a $30$\,Hz) & $-0.0060$ & $[-0.0450,\ +0.0342]$ & 0.90 & 0.039 & sin cota estimable \\
+ & ventana $0$ a $2$\,s & $+0.0417$ & $[+0.0294,\ +0.0541]$ & $<0.001$ & 0.052 & sin cota estimable \\
+ & ventana $0$ a $3$\,s & $+0.0045$ & $[-0.0054,\ +0.0145]$ & 0.83 & 0.013 & sin cota estimable \\
+ & sin aumentación & $+0.0073$ & $[-0.0046,\ +0.0200]$ & 0.79 & 0.018 & sin cota estimable \\
+ & reflexión de canales & $+0.0260$ & $[+0.0120,\ +0.0420]$ & 0.005 & 0.039 & sin cota estimable \\
+ & ruido en Fourier & $+0.0019$ & $[-0.0035,\ +0.0074]$ & 0.90 & 0.007 & sin cota estimable \\
+\midrule
+Conformer & banda $\mu$ ($8$ a $13$\,Hz) & $+0.0459$ & $[+0.0084,\ +0.0850]$ & 0.23 & 0.078 & sin cota estimable \\
+ & banda $\beta$ ($13$ a $30$\,Hz) & $+0.0355$ & $[+0.0008,\ +0.0723]$ & 0.45 & 0.066 & sin cota estimable \\
+ & banda $\mu+\beta$ ($8$ a $30$\,Hz) & $+0.0781$ & $[+0.0407,\ +0.1165]$ & 0.002 & 0.111 & sin cota estimable \\
+ & ventana $0$ a $2$\,s & $-0.0044$ & $[-0.0193,\ +0.0090]$ & 1.00 & 0.017 & sin cota estimable \\
+ & ventana $0$ a $3$\,s & $-0.0097$ & $[-0.0175,\ -0.0022]$ & 0.13 & 0.016 & sin cota estimable \\
+ & sin aumentación & $-0.0068$ & $[-0.0126,\ -0.0009]$ & 0.23 & 0.012 & sin cota estimable \\
+ & reflexión de canales & $+0.0219$ & $[+0.0120,\ +0.0318]$ & 0.002 & 0.030 & sin cota estimable \\
+ & ruido en Fourier & $+0.0010$ & $[-0.0049,\ +0.0071]$ & 1.00 & 0.006 & sin cota estimable \\
+\midrule
+LaBraM & ventana $0$ a $2$\,s & $-0.0217$ & $[-0.0406,\ -0.0030]$ & 0.12 & 0.038 & supera la cota \\
+ & reflexión de canales & $-0.0139$ & $[-0.0265,\ -0.0011]$ & 0.043 & 0.024 & no interpretable \\
+ & ruido en Fourier & $-0.0031$ & $[-0.0098,\ +0.0037]$ & 0.25 & 0.009 & no interpretable \\
+\midrule
+EEGMamba & ventana $0$ a $2$\,s & $+0.0242$ & $[+0.0089,\ +0.0390]$ & 0.004 & 0.037 & sin cambio de recorte \\
+ & reflexión de canales & $+0.0232$ & $[+0.0090,\ +0.0381]$ & 0.015 & 0.036 & sin cambio de recorte \\
+ & ruido en Fourier & $-0.0069$ & $[-0.0150,\ +0.0012]$ & 0.12 & 0.014 & sin cambio de recorte \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\paragraph{Ventana.} La ventana de \seg{0} a \seg{2} (la de \seg{0} a \seg{4} se fijó sin evaluar
+alternativas) da una exactitud mayor en \eegnet{} ($+0.0417$; $46$ de $54$ participantes mejoran,
+$r = 0.68$, $p_{\text{Holm}} < 0.001$) y en EEGMamba ($+0.0242$, $p_{\text{Holm}} = 0.004$), es
+equivalente a la base en el Conformer ($-0.0044$) y en LaBraM se asocia con una exactitud menor
+($-0.0217$, sobre la cota de $0.0182$, $p_{\text{Holm}} = 0.12$), sin ser concluyente. La ventana de
+\seg{0} a \seg{3} es equivalente a la de \seg{0} a \seg{4} en \eegnet{} y el Conformer. La ventana del
+resto del documento sigue siendo la fijada de antemano.
+
+\paragraph{Subbandas.} La banda $\mu+\beta$ se asocia con una exactitud mayor en el Conformer
+($+0.0781$; $39$ de $54$ participantes mejoran, $r = 0.50$, $p_{\text{Holm}} = 0.002$), y la banda $\beta$
+con una menor en \eegnet{} ($-0.0456$, $p_{\text{Holm}} = 0.009$); las demás no sobreviven a la
+corrección. El signo es opuesto en las dos arquitecturas evaluadas y no se confirmó con otra semilla; no se
+evaluaron en LaBraM ni en EEGMamba.
+
+\paragraph{Aumentación.} La reflexión de canales se asocia con una exactitud mayor en \eegnet{}
+($+0.0260$, $p_{\text{Holm}} = 0.005$), el Conformer ($+0.0219$, $0.002$) y EEGMamba ($+0.0232$, $0.015$),
+y no es interpretable en LaBraM ($-0.0139$, bajo la cota de $0.0182$; $-0.0118$ con la base del mismo
+régimen). El ruido en Fourier es equivalente a la base en las cuatro (margen mínimo de $0.006$ a $0.014$),
+con equivalencia dependiente del régimen en las tres confundidas. Quitar toda la aumentación cambia la
+exactitud en menos de un punto en \eegnet{} ($+0.0073$) y el Conformer ($-0.0068$): la aumentación por
+defecto no aporta ni resta de forma detectable. Con la familia secundaria de $22$ contrastes dejan de ser
+significativas la reflexión de canales en EEGMamba ($0.118$) y en LaBraM ($0.217$).
+
+\paragraph{La parada temprana como explicación alternativa.} En $21$ de los $22$ contrastes el signo de la
+diferencia de exactitud coincide con el del cambio en el porcentaje de particiones cuyo mejor modelo es el
+de la época $30$, el suelo del esquema (la exactitud sube cuando el porcentaje baja;
+tabla~\ref{tab:parada-f4}). Por ejemplo, la ventana de \seg{0} a \seg{2} reduce ese porcentaje en \eegnet{}
+del $16.6$ al $7.6$\,\%. Una parte de los efectos puede reflejar si el entrenamiento progresa más allá del
+calentamiento con $144$ ensayos y no la calidad de la representación; el diseño no separa ambas lecturas,
+aunque en EEGMamba el $79.4$\,\% de las particiones con ventana corta se sigue deteniendo en el suelo, de
+modo que la parada temprana no explica por sí sola esa mejora. Este análisis es exploratorio y no
+pertenece a ninguna familia de contrastes.
+
+\begin{table}[H]
+\centering
+\caption{Porcentaje de las $1\,080$ particiones intra-sujeto cuyo mejor modelo es el de la época $30$ (el
+suelo: diez épocas de calentamiento y veinte de paciencia), por arquitectura y variante, semilla $2026$.}
+\label{tab:parada-f4}
+\small
+\begin{tabular}{lcccc}
+\toprule
+ & \textbf{\eegnet{}} & \textbf{Conformer} & \textbf{LaBraM} & \textbf{EEGMamba} \\
+\midrule
+Base (semilla 2026) & 16.6\,\% & 53.1\,\% & 21.1\,\% & 85.6\,\% \\
+Ventana $0$ a $2$\,s & 7.6\,\% & 63.1\,\% & 28.5\,\% & 79.4\,\% \\
+Reflexión de canales & 12.2\,\% & 28.1\,\% & 26.9\,\% & 58.4\,\% \\
+Ruido en Fourier & 15.2\,\% & 55.3\,\% & 25.4\,\% & 87.2\,\% \\
+Ventana $0$ a $3$\,s & 13.8\,\% & 61.9\,\% & -- & -- \\
+Sin aumentación & 12.0\,\% & 58.9\,\% & -- & -- \\
+Banda $\mu$ & 22.4\,\% & 29.2\,\% & -- & -- \\
+Banda $\beta$ & 31.4\,\% & 28.4\,\% & -- & -- \\
+Banda $\mu+\beta$ & 22.8\,\% & 21.9\,\% & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+

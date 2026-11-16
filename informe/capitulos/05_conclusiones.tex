@@ -1,0 +1,68 @@
+\chapter{Conclusiones}
+\label{cap:conclusiones}
+
+Los experimentos de los capítulos~\ref{cap:resultados} y~\ref{cap:validacion-externa} permiten concluir
+que \textbf{la generalización entre personas del mismo conjunto no se mantiene sin pérdida al cambiar de
+protocolo de adquisición, y que con estos datos no se identifica una única arquitectura de mayor robustez}.
+Ninguna de las cuatro arquitecturas obtiene el mejor valor en los tres ejes del criterio
+(tabla~\ref{tab:robustez}), y las diferencias de \idp{} entre ellas ($0.137$ a $0.167$) quedan dentro de la
+incertidumbre de la estimación (intervalos jerárquicos de amplitud $0.16$ a $0.21$). Las conclusiones
+siguen el orden de los experimentos.
+
+\begin{enumerate}
+  \item \textbf{\loso{} supera al protocolo intra-sujeto en las cuatro arquitecturas, por lo que el
+        indicador clásico es negativo y no ordena las arquitecturas.} Con la media de tres semillas las
+        diferencias van de $+0.092$ a $+0.145$ (tabla~\ref{tab:within-loso}).
+  \item \textbf{El indicador \dsi{} es positivo en las cuatro arquitecturas, pero solo es significativo en
+        LaBraM.} Va de $+0.026$ a $+0.052$ y únicamente en LaBraM se mantiene tras la corrección de Holm
+        ($p_{\text{Holm}} = 0.033$, tabla~\ref{tab:dsi}).
+  \item \textbf{En \loso{}, \eegnet{}, el Conformer y LaBraM son equivalentes dentro de $\pm 0.03$, y
+        EEGMamba rinde menos.} EEGMamba obtiene $0.715$ frente a $0.761$, $0.747$ y $0.755$, con tamaño de
+        efecto grande (sección~\ref{sec:equivalencia-resultados}, tabla~\ref{tab:wilcoxon}); el margen
+        de equivalencia se fijó tras un primer análisis de los datos. En el protocolo
+        intra-sujeto ningún par es equivalente y las diferencias dependen del criterio de selección del
+        modelo (sección~\ref{sec:seleccion-intra}), por lo que no se atribuyen a la capacidad ni al
+        preentrenamiento. EEGMamba requirió una cabeza que conserva la representación por canal, con la que
+        alcanza $0.571$ en intra-sujeto (media de tres semillas) frente a $0.519$ con el promediado global
+        (semilla $2026$; sección~\ref{sec:wilcoxon}). Las semillas no comparten del todo el régimen de
+        optimización, y la cota del efecto de ese cambio, de $0.010$ a $0.020$ de exactitud
+        (tabla~\ref{tab:confusor}), descarta un efecto medio mayor, no uno nulo.
+  \item \textbf{Ningún efecto de ventana, subbanda o aumentación es común a las cuatro arquitecturas en el
+        protocolo intra-sujeto.} La ventana de \seg{0} a \seg{2} se asocia con una exactitud mayor en
+        \eegnet{} ($+0.0417$) y en EEGMamba ($+0.0242$), y la banda $\mu+\beta$ en el Conformer
+        ($+0.0781$); el ruido en Fourier es equivalente a la base en las cuatro (tabla~\ref{tab:ablaciones-f4}).
+        Las variantes se evaluaron con una sola semilla, las subbandas solo en \eegnet{} y el Conformer
+        (sección~\ref{sec:ablaciones-f4}), y en \eegnet{}, el Conformer y LaBraM el contraste con la base está
+        confundido con el cambio de régimen de optimización, por lo que son asociaciones y no propiedades de la
+        señal. En $21$ de los $22$ contrastes el signo coincide con el del cambio en la proporción de
+        particiones que se detienen en el suelo del esquema, explicación alternativa que el diseño no separa.
+  \item \textbf{La contaminación ocular residual se acota sin eliminarse.} Cuatro sujetos conservan
+        contaminación ocular tras el preprocesamiento, y su efecto sobre la exactitud se acota en la
+        tabla~\ref{tab:sensibilidad}.
+  \item \textbf{El alineamiento euclidiano no corrige la degradación.} En \loso{}, con una semilla,
+        aumenta la exactitud de forma inequívoca solo en EEGMamba ($+0.0463$) y en LaBraM ($+0.0249$) y no
+        cambia de forma detectable la brecha entre sujetos vistos y no vistos. En la transferencia, con alineamiento
+        la caída por protocolo aumenta entre $0.033$ y $0.068$ (tabla~\ref{tab:ea-caidas}).
+  \item \textbf{La reflexión de canales tiene en \loso{} un efecto pequeño y poco consistente.} En
+        intra-sujeto se asocia con mayor exactitud en \eegnet{}, el Conformer y EEGMamba, pero en \loso{} el
+        efecto es pequeño (sección~\ref{sec:f6f8}).
+  \item \textbf{Con el procedimiento de calibración probado, $10$ o $20$ ensayos del participante no visto
+        no mejoraron la exactitud.} Las $24$ ganancias medias de los modelos base fueron negativas y $16$
+        significativas tras Holm (tabla~\ref{tab:fewshot}). Esto no establece que la calibración no sirva,
+        solo que este procedimiento, en este escenario, no mejoró la exactitud.
+  \item \textbf{WBCIC-SHU no es un conjunto más difícil.} Un modelo nativo alcanza entre $0.766$ y
+        $0.822$, frente a $0.596$ a $0.620$ del modelo transferido sobre los mismos $2\,040$ segmentos
+        (tabla~\ref{tab:transferencia}); la cifra del nativo es un límite superior, porque se entrenó con
+        sujetos vistos.
+  \item \textbf{La caída en la transferencia no se explica por la escala de amplitud bajo este contraste.}
+        La normalización por segmento no supera a la política \emph{origen}, que a su vez la supera en
+        \eegnet{} ($p_{\text{Holm}} = 0.010$) y en el Conformer ($0.001$)
+        (tabla~\ref{tab:politicas-contrastes}). El contraste no distingue entre que la escala no sea la causa
+        y que el modelo no tolere otra normalización.
+  \item \textbf{La exactitud cae entre $0.095$ y $0.123$ al cambiar de protocolo de adquisición, con
+        intervalos que excluyen el cero en las cuatro arquitecturas} (sección~\ref{sec:descomposicion}).
+        Que esa caída supere a la debida al cambio de persona, de $0.055$ a $0.087$ y estimada sobre $10$
+        sujetos apartados, es compatible con los datos, pero la diferencia no es significativa en ninguna
+        arquitectura (tabla~\ref{tab:descomposicion-ic}), por lo que no se rechaza ni se confirma.
+\end{enumerate}
+

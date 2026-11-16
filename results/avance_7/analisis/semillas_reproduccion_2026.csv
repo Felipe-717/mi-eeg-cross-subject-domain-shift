@@ -1,0 +1,44 @@
+item,publicado,recalculado,ok
+verificar_cifras: cifras declaradas / discrepancias,195,0,True
+loso 2026 acc media eegnet,0.762546,0.762546,True
+loso 2026 acc media conformer,0.751667,0.751667,True
+loso 2026 acc media labram,0.753796,0.753796,True
+loso 2026 acc media eegmamba,0.716806,0.716806,True
+within 2026 acc media labram,0.664722,0.664722,True
+within 2026 acc media eegmamba,0.576898,0.576898,True
+within media3 acc eegnet,0.634275,0.634275,True
+within media3 acc conformer,0.602469,0.602469,True
+"tab:wilcoxon acc loso eegnet-conformer (dif mediana, p, r)","+0.006, 0.12, 0.21","+0.006, 0.118, 0.21",True
+"tab:wilcoxon acc loso eegnet-labram (dif mediana, p, r)","+0.006, 0.27, 0.15","+0.006, 0.2741, 0.15",True
+"tab:wilcoxon acc loso conformer-labram (dif mediana, p, r)","-0.001, 0.52, 0.09","-0.001, 0.4935, 0.09",False
+"tab:wilcoxon acc loso eegnet-eegmamba (dif mediana, p, r)","+0.044, <0.001, 0.71","+0.044, 1.882e-07, 0.71",True
+"tab:wilcoxon acc loso conformer-eegmamba (dif mediana, p, r)","+0.028, <0.001, 0.59","+0.027, 1.45e-05, 0.59",True
+"tab:wilcoxon acc loso labram-eegmamba (dif mediana, p, r)","+0.035, <0.001, 0.67","+0.035, 8.001e-07, 0.67",True
+"tab:wilcoxon acc within eegnet-conformer (dif mediana, p, r)","+0.019, <0.001, 0.48","+0.019, 0.000421, 0.48",True
+"tab:wilcoxon acc within eegnet-labram (dif mediana, p, r)","+0.015, 0.29, 0.14","+0.015, 0.2994, 0.14",False
+"tab:wilcoxon acc within conformer-labram (dif mediana, p, r)","-0.035, 0.004, 0.4","-0.035, 0.003761, 0.39",False
+"tab:wilcoxon acc within eegnet-eegmamba (dif mediana, p, r)","+0.065, <0.001, 0.63","+0.065, 3.252e-06, 0.63",True
+"tab:wilcoxon acc within conformer-eegmamba (dif mediana, p, r)","+0.016, <0.001, 0.45","+0.016, 0.0009878, 0.45",True
+"tab:wilcoxon acc within labram-eegmamba (dif mediana, p, r)","+0.041, <0.001, 0.73","+0.041, 8.116e-08, 0.73",True
+"tab:wilcoxon kappa loso eegnet-conformer (dif mediana, p, r)","+0.013, 0.12, 0.21","+0.013, 0.118, 0.21",True
+"tab:wilcoxon kappa loso eegnet-labram (dif mediana, p, r)","+0.013, 0.28, 0.15","+0.013, 0.2741, 0.15",False
+"tab:wilcoxon kappa loso conformer-labram (dif mediana, p, r)","-0.003, 0.46, 0.1","-0.003, 0.4935, 0.09",False
+"tab:wilcoxon kappa loso eegnet-eegmamba (dif mediana, p, r)","+0.088, <0.001, 0.7","+0.088, 1.882e-07, 0.71",False
+"tab:wilcoxon kappa loso conformer-eegmamba (dif mediana, p, r)","+0.055, <0.001, 0.59","+0.055, 1.45e-05, 0.59",True
+"tab:wilcoxon kappa loso labram-eegmamba (dif mediana, p, r)","+0.070, <0.001, 0.67","+0.070, 8.001e-07, 0.67",True
+"tab:wilcoxon kappa within eegnet-conformer (dif mediana, p, r)","+0.038, <0.001, 0.48","+0.037, 0.000421, 0.48",True
+"tab:wilcoxon kappa within eegnet-labram (dif mediana, p, r)","+0.030, 0.31, 0.14","+0.030, 0.2994, 0.14",False
+"tab:wilcoxon kappa within conformer-labram (dif mediana, p, r)","-0.070, 0.004, 0.39","-0.070, 0.003761, 0.39",True
+"tab:wilcoxon kappa within eegnet-eegmamba (dif mediana, p, r)","+0.130, <0.001, 0.63","+0.130, 3.252e-06, 0.63",True
+"tab:wilcoxon kappa within conformer-eegmamba (dif mediana, p, r)","+0.033, <0.001, 0.45","+0.033, 0.0009878, 0.45",True
+"tab:wilcoxon kappa within labram-eegmamba (dif mediana, p, r)","+0.083, <0.001, 0.73","+0.082, 8.116e-08, 0.73",True
+tab:within-loso EEGNet intra (3 semillas) / LOSO 2026 / dif,0.634 / 0.763 / +0.128,0.634 / 0.763 / +0.128,True
+tab:within-loso EEGNet sujetos que mejoran / p,48 / 3e-8,48 / 3.4e-08,True
+tab:dsi folds>0 eegnet,33,33,True
+tab:dsi folds>0 conformer,34,34,True
+tab:dsi folds>0 labram,38,38,True
+tab:dsi folds>0 eegmamba,37,37,True
+bajo<=0.70 intra eegnet (semillas de la publicacion),41,41,True
+bajo<=0.70 intra conformer (semillas de la publicacion),45,45,True
+bajo<=0.70 intra labram (semillas de la publicacion),37,37,True
+bajo<=0.70 intra eegmamba (semillas de la publicacion),48,48,True

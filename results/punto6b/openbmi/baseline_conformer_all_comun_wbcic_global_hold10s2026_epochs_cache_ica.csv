@@ -1,0 +1,2 @@
+run_id,scenario,seed,n_train,n_val,n_test,n_epochs,elapsed_s,acc,kappa,f1_macro,confusion_matrix,model,n_params,ckpt_path,cfg_hash,channels,norm,n_subjects,n_holdout,subs_apartados
+all_openbmi_seed2026_comun_wbcic_global_hold10s2026,all,2026,15840,1760,0,60,280.5,0.8142045454545455,0.6284090909090909,0.8131694865569485,"[[782, 98], [229, 651]]",conformer,682946,/raw/checkpoints/conformer_epochs_cache_ica/all/all_openbmi_seed2026_comun_wbcic_global_hold10s2026.pt,6f16811d008d,comun_wbcic,global,44,10,sub-04 sub-07 sub-13 sub-17 sub-30 sub-34 sub-36 sub-47 sub-51 sub-52

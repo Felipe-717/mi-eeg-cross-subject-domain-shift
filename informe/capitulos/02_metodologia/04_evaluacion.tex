@@ -1,0 +1,737 @@
+\section{Fase 4: protocolo de evaluación}
+\label{sec:fase4}
+
+Se emplean dos protocolos de validación, que responden a preguntas distintas. El
+protocolo intra-sujeto mide cuánta información motora puede decodificarse en un
+sujeto a partir de sus propios datos de entrenamiento. El protocolo inter-sujeto
+mide cuánto de ese aprendizaje se transfiere a un sujeto nuevo. La comparación
+entre ambos es la que motiva el indicador de la sección~\ref{sec:dsi}.
+
+\subsection{Validación intra-sujeto}
+\label{sec:within}
+
+Cada sujeto se evalúa consigo mismo y \textbf{por separado en cada sesión}, para
+que el resultado no mezcle la variabilidad entre días con la del propio
+protocolo. Los 200 ensayos de una sesión se reparten en diez \textit{folds} estratificados por
+clase, sorteados con barajado dentro de cada sesión (\texttt{StratifiedKFold}), y no en
+bloques temporales contiguos; en cada partición un \textit{fold} distinto actúa como prueba y los
+nueve restantes se usan para entrenar y validar, como muestra la
+figura~\ref{fig:within}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  bloque/.style={draw, minimum width=0.82cm, minimum height=0.75cm},
+  fl/.style={-{Latex[length=1.8mm]}, semithick},
+  x=1cm, y=1cm
+]
+\foreach \i in {1,...,10}{
+  \node[bloque, fill=blue!8] at ({0.9*\i},0) {\scriptsize \i};
+}
+\node[bloque, fill=orange!25] (test) at ({0.9*3},0) {\scriptsize 3};
+
+\node[anchor=south] (etq) at ({0.9*3},0.75) {\scriptsize prueba: 20 ensayos};
+\draw[fl] (etq.south) -- (test.north);
+
+\node[anchor=north, align=center] at (4.95,-0.55)
+  {\scriptsize los otros nueve \textit{folds} (180 ensayos):
+   144 de entrenamiento y 36 de validación, que determinan la parada temprana};
+\node[anchor=north, align=center] at (4.95,-1.35)
+  {\scriptsize el \textit{fold} de prueba rota $\rightarrow$ 10 particiones por sesión,
+   2 sesiones por sujeto};
+\end{tikzpicture}
+\caption{Validación intra-sujeto. Los 200 ensayos de una sesión se dividen en
+diez \textit{folds} estratificados por clase, sorteados al azar dentro de la sesión (no son
+bloques temporales contiguos), y cada uno actúa como conjunto de prueba una vez. El proceso se
+repite en las dos sesiones, lo que da 20 particiones por sujeto, y con tres semillas ($2026$, $2027$ y $2028$) en las
+cuatro arquitecturas (sección~\ref{sec:semillas-por-arq}).}
+\label{fig:within}
+\end{figure}
+
+Debe señalarse que en este protocolo cada modelo se entrena con
+\textbf{144 ensayos} y se detiene con 36. Es un régimen de datos muy escaso que, junto
+con el reducido tamaño de la validación (sección~\ref{sec:seleccion-intra}), condiciona
+buena parte de lo que se observa en el capítulo~\ref{cap:resultados}.
+
+\subsection{Validación \loso{}}
+
+Se emplea validación \textit{Leave-One-Subject-Out} sobre los 54 sujetos. En cada
+\textit{fold}, un sujeto constituye el conjunto de prueba y los $53$ restantes se reparten
+en dos grupos: \textbf{dos sujetos completos} forman el conjunto de validación, cuya pérdida
+determina la parada temprana, y los otros \textbf{51} forman el conjunto de entrenamiento. Los
+dos sujetos de validación se eligen de forma determinista y rotan entre \textit{folds}, de
+modo que ninguno actúa siempre como validación. El sujeto de prueba \textbf{no aporta ningún
+ensayo} al entrenamiento, a la validación ni a los estadísticos de normalización.
+
+Cada modelo se entrena así con $51 \times 360 = 18\,360$ ensayos, frente a los 144 del
+protocolo anterior, y se detiene con $2 \times 400 = 800$ ensayos de personas que no
+participan en el ajuste de los pesos. Que la parada temprana se decida sobre personas no
+vistas tiene una consecuencia que conviene anotar: el modelo conservado es el que mejor
+generaliza a personas nuevas dentro del conjunto de origen, y no el que mejor se ajusta a
+las personas con las que se entrenó.
+
+\subsection{Protocolos adicionales: modelo global y modelo con sujetos apartados}
+\label{sec:protocolos-extra}
+
+Los dos protocolos anteriores responden a preguntas dentro de \openbmi{}. Para evaluar el
+cambio de dominio entre conjuntos de datos distintos hacen falta dos protocolos más, que se
+describen aquí porque condicionan la lectura de todos los resultados del
+capítulo~\ref{cap:validacion-externa}.
+
+\subsubsection{Qué sesiones se emplean}
+
+Conviene fijarlo antes que nada, porque no es simétrico entre los dos conjuntos y de ello
+depende la interpretación de las cifras:
+
+\begin{itemize}
+  \item De \openbmi{} se emplean \textbf{sus dos sesiones}, en todos los protocolos. Cada
+  sujeto aporta $400$ segmentos, $200$ por sesión, y los $54$ sujetos suman $21\,600$.
+  \item De WBCIC-SHU se emplea \textbf{únicamente la primera de sus tres sesiones}, tanto
+  para entrenar el modelo nativo como para evaluar la transferencia. Cada sujeto aporta
+  $200$ segmentos. La versión distribuida contiene $10\,199$, uno menos que los $10\,200$
+  nominales, y quedan $10\,198$ tras descartar un segmento saturado
+  (sección~\ref{sec:wbcic-preproc}).
+\end{itemize}
+
+Restringirse a la primera sesión de WBCIC-SHU es una elección conservadora: sus autores
+documentan un efecto de aprendizaje entre días: con \eegnet{}, la exactitud media sube de
+$0.818$ en la primera sesión a $0.866$ en la segunda y $0.889$ en la tercera
+\cite{yang2025wbcic}, de modo que la primera es la
+condición menos favorable. La consecuencia, que se declara aquí y se retoma al interpretar
+los resultados, es que el modelo nativo de WBCIC entrena con $144$ segmentos por persona
+frente a los $360$ de un modelo de \openbmi{}: una sesión menos y, además, la fracción que
+cede al conjunto reservado.
+
+\subsubsection{Protocolo global: un solo modelo sobre todos los sujetos}
+
+En los protocolos intra-sujeto y \loso{} el resultado es un promedio sobre decenas de
+modelos: $20$ particiones por sujeto y semilla en el primero y $54$ modelos distintos en el segundo,
+cada uno entrenado con $51$ sujetos y detenido con otros $2$. Esto impide trasladar \emph{un} modelo a otro conjunto de
+datos, porque no existe un único conjunto de pesos que represente al protocolo.
+
+El protocolo global entrena, por tanto, \textbf{un solo modelo por arquitectura} con la
+totalidad de los sujetos disponibles, reservando un $10$\,\% estratificado por sujeto, clase
+y sesión para la parada temprana. No produce ninguna medida de generalización por sí mismo:
+su única salida son los pesos que después se aplican al segundo conjunto de datos. La
+figura~\ref{fig:global} lo esquematiza.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  caja/.style={draw, rounded corners=2pt, minimum height=0.8cm, align=center},
+  fl/.style={-{Latex[length=1.8mm]}, semithick},
+  x=1cm, y=1cm
+]
+\node[caja, fill=blue!10, minimum width=7.2cm] (tr) at (0,0)
+  {\textbf{Entrenamiento}: 54 sujetos, 2 sesiones\\45 canales, $19\,440$ segmentos ($90$\,\%)};
+\node[caja, fill=blue!22, minimum width=2.4cm] (va) at (4.9,0)
+  {\textbf{Validación}\\$2\,160$ ($10$\,\%)\\[-2pt]\scriptsize parada temprana};
+\node[anchor=north, font=\scriptsize, align=center] at (0,-0.85)
+  {los mismos 54 sujetos en las dos cajas: la validación mide\\
+   \textbf{sujetos vistos}, no generalización};
+\node[caja, fill=orange!20, minimum width=4.4cm] (ck) at (0,-2.7)
+  {Un único conjunto de pesos por arquitectura};
+\draw[fl] (tr.south) ++(0,-1.2) -- (ck.north);
+\node[caja, fill=green!14, minimum width=5.6cm] (ap) at (0,-4.2)
+  {Aplicación a WBCIC-SHU \textbf{sin reentrenar}};
+\draw[fl] (ck) -- (ap);
+\end{tikzpicture}
+\caption{Protocolo global. Se entrena un solo modelo por arquitectura con los 54 sujetos
+para disponer de un conjunto de pesos transferible, con los 45 canales comunes a los dos
+conjuntos. La validación determina la parada temprana, y su exactitud \textbf{no es una medida
+de generalización}: procede de segmentos de los mismos sujetos que formaron parte del
+entrenamiento.}
+\label{fig:global}
+\end{figure}
+
+Este protocolo tiene una limitación que conviene enunciar de forma explícita, porque de
+ella se deriva el siguiente: al entrenar con los $54$ sujetos \textbf{no queda ninguna persona
+sin ver}. El modelo resultante no puede producir una cifra de \emph{persona nueva dentro
+del mismo protocolo de adquisición}, y por tanto la caída que se observe al aplicarlo a otro
+conjunto de datos mezcla dos cambios simultáneos, el de la persona y el del protocolo, sin
+permitir separarlos.
+
+Tampoco es lícito estimar el primero de esos dos efectos recurriendo al valor \loso{}. La
+exactitud \loso{} es la media de $54$ modelos entrenados con $51$ sujetos cada uno, mientras
+que la del protocolo global procede de un único modelo entrenado con $54$: son
+\textbf{modelos distintos}, y su diferencia no aísla ningún factor.
+
+\subsubsection{Protocolo con sujetos apartados: 44 más 10}
+
+Para medir por separado el efecto de la persona y el del protocolo se entrena una segunda
+tanda de modelos apartando \textbf{diez sujetos completos} de \openbmi{}, que no aportan
+ningún segmento ni al entrenamiento ni a los estadísticos de normalización. Un mismo
+conjunto de pesos se evalúa entonces sobre tres conjuntos, como muestra la
+figura~\ref{fig:hold}. Del primero al segundo cambia la persona. Del segundo al tercero
+cambia un \textbf{factor compuesto}: a la vez la población, la institución, el amplificador,
+el montaje y las diferencias de preprocesamiento de la tabla~\ref{tab:armonizacion}, que
+este diseño no permite separar.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  caja/.style={draw, rounded corners=2pt, minimum height=0.8cm, align=center},
+  ev/.style={draw, rounded corners=2pt, fill=green!14, minimum width=3.5cm,
+             minimum height=1.35cm, align=center, font=\scriptsize},
+  fl/.style={-{Latex[length=1.8mm]}, semithick},
+  x=1cm, y=1cm
+]
+\node[caja, fill=blue!10, minimum width=5.6cm] (tr) at (-1.3,0)
+  {\textbf{44 sujetos} de \openbmi{}\\45 canales, $15\,840$ segmentos};
+\node[caja, fill=blue!22, minimum width=2.0cm] (va) at (2.6,0)
+  {\textbf{Val.}\\$1\,760$};
+\node[caja, fill=red!12, minimum width=2.6cm] (ho) at (5.6,0)
+  {\textbf{10 sujetos}\\apartados};
+\node[anchor=north, font=\scriptsize] at (5.6,-0.62) {nunca vistos};
+
+\node[caja, fill=orange!20, minimum width=4.0cm] (ck) at (0,-1.9)
+  {Un conjunto de pesos};
+\draw[fl] (tr.south) -- (ck.north);
+
+\node[ev] (e1) at (-4.6,-4.0)
+  {\textbf{1. Validación}\\sujetos vistos\\determina la parada temprana};
+\node[ev] (e2) at (0,-4.0)
+  {\textbf{2. Los 10 apartados}\\\textbf{persona nueva}\\protocolo conocido};
+\node[ev] (e3) at (4.6,-4.0)
+  {\textbf{3. WBCIC-SHU}\\persona nueva\\\textbf{protocolo nuevo}};
+\coordinate (bus) at (0,-2.9);
+\draw[fl] (ck) -- (bus);
+\foreach \e in {e1,e2,e3} \draw[fl] (bus) -| (\e.north);
+
+\draw[{Latex[length=1.6mm]}-{Latex[length=1.6mm]}, dashed] (e1.south) ++(0,-0.25)
+  -- node[below, font=\scriptsize] {efecto de la persona} ($(e2.south)+(0,-0.25)$);
+\draw[{Latex[length=1.6mm]}-{Latex[length=1.6mm]}, dashed] (e2.south) ++(0,-0.95)
+  -- node[below, font=\scriptsize] {efecto del protocolo} ($(e3.south)+(0,-0.95)$);
+\end{tikzpicture}
+\caption{Protocolo con sujetos apartados. Los tres conjuntos de evaluación se recorren con
+\textbf{los mismos pesos}, de modo que las diferencias entre ellos no se deben a modelos
+distintos: de 1 a 2 cambia la persona; de 2 a 3 cambia además el protocolo de adquisición,
+que agrupa varios factores (tabla~\ref{tab:armonizacion}).
+El conjunto 1 es también el que determina la parada temprana, y sus ensayos proceden de las
+mismas sesiones que los de entrenamiento; ambas condiciones tienden a elevar su exactitud
+y, con ella, la caída de 1 a 2.}
+\label{fig:hold}
+\end{figure}
+
+La selección de los diez sujetos es aleatoria con semilla fija y se recalcula de forma
+determinista a partir de la lista ordenada de sujetos, sin depender del orden en que el
+sistema de ficheros los devuelva. Los sujetos apartados resultan ser
+sub-04, 07, 13, 17, 30, 34, 36, 47, 51 y 52. Su exactitud \loso{} media, con la media de tres semillas por sujeto, queda por debajo
+de la del resto en las cuatro arquitecturas, entre $2.2$ y $3.1$ puntos: con \eegnet{},
+$0.742$ frente a $0.765$. La diferencia no es significativa (Mann-Whitney, $p = 0.56$ con
+\eegnet{} y entre $0.34$ y $0.58$ con las otras tres), pero con diez sujetos la prueba no
+tiene potencia para descartar un déficit de ese tamaño, que coincide con el margen de
+equivalencia de la sección~\ref{sec:equivalencia}. Como el efecto de la persona se calcula
+restando la exactitud sobre los apartados a la de los sujetos vistos, esa selección puede
+sobrestimarlo en una magnitud comparable. Se hace
+constar que \textbf{la semilla no se volvió a sortear tras comprobar esto}: repetir el
+sorteo hasta obtener un subconjunto favorable sería una selección sesgada.
+
+\subsubsection{Normalización del conjunto de destino}
+
+Al aplicar un modelo a un conjunto de datos que no formó parte de su entrenamiento, la media y la desviación con que se
+normaliza la entrada no están definidas de forma única. Se reportan tres alternativas, porque la
+diferencia entre ellas es en sí misma informativa sobre la naturaleza del cambio de dominio:
+
+\begin{itemize}
+  \item \textbf{Origen}: se aplican la media y la desviación del entrenamiento en
+  \openbmi{}. Es la condición más estricta, en la que no se emplea ninguna información del
+  conjunto de destino.
+  \item \textbf{Por segmento}: cada segmento se escala con una única media y una única
+  desviación, calculadas sobre todos sus canales. No emplea ningún otro segmento, de modo
+  que no es transductiva, y corrige una diferencia de ganancia común a todos los canales;
+  no corrige diferencias de ganancia entre canales ni de covarianza espacial.
+  \item \textbf{Por sujeto}: estadísticos de cada sujeto del destino. Sí es transductiva,
+  pues supone disponer de todos los datos del sujeto antes de clasificar.
+\end{itemize}
+
+Esta elección permite contrastar una hipótesis concreta y acotada: \textbf{si la caída al
+cambiar de conjunto se debiera a una diferencia de ganancia global entre los equipos de
+registro, la normalización por segmento la corregiría y el desempeño aumentaría}. El
+contraste tiene dos límites. No alcanza a diferencias de ganancia por canal ni de
+covarianza. Y las tres políticas se aplican a un modelo entrenado con los estadísticos por
+canal del origen, de modo que las dos alternativas introducen además un desajuste entre
+la normalización de entrenamiento y la de prueba; un contraste completo exigiría entrenar
+también con cada normalización. El capítulo~\ref{cap:validacion-externa} muestra que la
+normalización por segmento no recupera el desempeño.
+
+Finalmente, para que el modelo transferido y un modelo entrenado en el destino sean
+comparables, se aparta en WBCIC-SHU un $20$\,\% de los segmentos de \textbf{cada} sujeto,
+estratificado por sujeto y clase, con una semilla propia e independiente de la del
+entrenamiento. Ese subconjunto, $2\,040$ segmentos, exactamente $40$ de cada uno de los
+$51$ sujetos y equilibrado entre clases, no se emplea para entrenar ni para la parada
+temprana de ninguno de los dos modelos, y es donde se miden ambos.
+
+\subsection{Calibración con pocos ensayos del sujeto no visto}
+\label{sec:metodo-fewshot}
+
+El protocolo \loso{} mide el desempeño con cero ensayos del sujeto de prueba, y el
+intra-sujeto con $144$ de entrenamiento. Para el escenario intermedio se calibra el modelo
+con $k$ ensayos del sujeto excluido, con $k \in \{10, 20\}$. La calibración se ejecuta
+dentro de cada \textit{fold} \loso{}, justo después de evaluar el modelo ya entrenado, sin
+reentrenarlo, de modo que cada \textit{fold} y semilla tiene un único modelo de partida.
+
+Los $400$ ensayos del sujeto excluido, de sus dos sesiones juntas, se dividen así. Para cada
+$k$ y cada uno de $5$ sorteos se eligen $k$ ensayos de calibración, estratificados por clase
+($k/2$ por clase), con un generador inicializado con $\mathrm{semilla}\times 1000 + k\times 10 +
+\mathrm{sorteo}$. La evaluación es el resto del sujeto ($390$ ensayos si $k = 10$, $380$ si
+$k = 20$); ningún ensayo de calibración se evalúa. Se comparan cuatro métodos, uno de ellos (cero) la referencia, sobre el mismo
+sorteo y el mismo resto, de modo que son pareados:
+
+\begin{itemize}
+  \item \textbf{Cero.} El modelo \loso{} sin calibrar, medido sobre ese resto. Es la
+  referencia pareada: sin ella, la comparación mezclaría el efecto de la calibración con el
+  de evaluar sobre menos ensayos.
+  \item \textbf{Estadísticos} (\texttt{stats}). Se sustituyen la media y la desviación por canal del
+  entrenamiento por las de los $k$ ensayos de calibración. No se modifica ningún peso.
+  \item \textbf{Cabeza} (\texttt{cabeza}). Se reentrena solo la última capa de clasificación de la
+  arquitectura con los $k$ ensayos, y el resto del modelo permanece congelado. Se emplea
+  AdamW con tasa de aprendizaje $10^{-3}$ y decaimiento de pesos $10^{-2}$, entropía cruzada
+  sin suavizado y $100$ pasos de lote completo, con las capas de normalización por lotes y
+  el \textit{dropout} en modo de evaluación (recalcular sus estadísticos con $10$ ensayos
+  sería otra forma de adaptación, no la que se quiere medir). La semilla de la cabeza es la
+  semilla de la ejecución más el índice del sorteo.
+  \item \textbf{Estadísticos y cabeza} (\texttt{stats+cabeza}). Las dos operaciones: la cabeza se entrena sobre los
+  ensayos de calibración ya normalizados con sus propios estadísticos.
+\end{itemize}
+
+El número de pasos y la tasa de aprendizaje de la cabeza se fijaron de antemano y no se
+ajustaron en ningún conjunto; son una elección del autor, sin una referencia que los respalde, y el
+resultado vale para esa configuración. No hay conjunto de validación ni parada temprana en la
+calibración. La \emph{ganancia} de un método es su exactitud menos la de \emph{cero} sobre
+el mismo sorteo; se promedia entre los cinco sorteos dentro de cada sujeto, y entre
+semillas dentro de él.
+
+La calibración se ejecutó sobre los modelos \loso{} de las semillas $2027$ y $2028$ y sobre
+los de la variante con alineamiento (semilla $2026$).
+
+
+\subsection{Indicador de degradación por cambio de dominio}
+\label{sec:dsi}
+
+\subsubsection{Problema del indicador clásico}
+
+El indicador de uso común cuantifica la degradación al pasar de la validación
+intra-sujeto (\textit{subject-dependent}) a la inter-sujeto
+(\textit{subject-independent}), comparación habitual en la literatura de interfaces cerebro-computadora
+(BCI) independiente del sujeto \cite{kwon2020}. Esa literatura compara ambos protocolos; la
+forma relativa que sigue es la formalización empleada en este trabajo para contrastarla:
+
+\begin{equation}
+\mathrm{DSI}_{\text{clásico}} =
+  \frac{m_{\text{intra}} - m_{\text{\loso{}}}}{m_{\text{intra}}}
+\label{eq:dsi-clasico}
+\end{equation}
+
+donde $m$ es una métrica de desempeño. Esta formulación es \textbf{confundida}:
+las dos condiciones no difieren solo en si el sujeto de prueba fue visto, sino
+también en el tamaño del conjunto de entrenamiento. En \openbmi{}, la condición
+intra-sujeto entrena con unos $10^2$ ensayos y la \loso{} con $10^4$. La
+diferencia de desempeño resultante mezcla el efecto del cambio de dominio con el
+efecto del volumen de datos, y no permite aislar el primero. La
+sección~\ref{sec:within-vs-loso} cuantifica esa confusión sobre los datos.
+
+\subsubsection{Indicador propuesto: \texorpdfstring{\dsi{}}{IDS}}
+
+Para evitar la confusión con el indicador clásico, que conserva la sigla \textit{DSI}
+establecida en la literatura, el propuesto aquí se denomina \textbf{\dsi{}, índice de
+degradación por sujeto}. Se propone comparar, \emph{para un mismo modelo entrenado una sola
+vez}, el desempeño sobre dos conjuntos de prueba que difieren únicamente en si el sujeto
+que los produjo estuvo o no en el entrenamiento:
+
+\begin{equation}
+\mathrm{IDS} = \frac{m_{\text{visto}} - m_{\text{no visto}}}{m_{\text{visto}}}
+\label{eq:dsi}
+\end{equation}
+
+donde:
+
+\begin{itemize}
+  \item $m_{\text{no visto}}$ se evalúa sobre el sujeto excluido de la partición
+        \loso{};
+  \item $m_{\text{visto}}$ se evalúa sobre una fracción de ensayos
+        \textbf{reservada} de los 51 sujetos de entrenamiento, que no participa
+        en el ajuste de los pesos, en el cálculo de los estadísticos de
+        normalización ni en la parada temprana. Esta última la determina un conjunto
+        distinto, el de los dos sujetos de validación, de modo que $m_{\text{visto}}$
+        no queda favorecido por el criterio de selección del modelo.
+\end{itemize}
+
+La reserva se estratifica por sujeto, clase y sesión, de modo que no se
+introduzca cambio temporal (día 1 frente a día 2) en la comparación. Se fijó una
+fracción del 10\,\%.
+
+Al compartir modelo, pesos y datos de entrenamiento, ambos conjuntos difieren en la
+pertenencia del participante al entrenamiento, y el indicador queda así libre del
+confundidor de volumen de datos que afecta a la ecuación~\eqref{eq:dsi-clasico}. No es, sin
+embargo, la única diferencia entre ellos. Los ensayos vistos se reservan de las mismas
+sesiones que los de entrenamiento, de modo que el modelo se ha ajustado con datos no solo
+de esa persona sino también de esa misma sesión de registro, y el indicador refleja ambas
+condiciones. Además, el conjunto visto promedia 51 personas y el no visto corresponde a una sola.
+Por ello, el indicador de cada \textit{fold} depende casi por completo de la dificultad
+del participante excluido, y solo se interpreta de forma agregada. La figura~\ref{fig:particiones} resume el
+esquema.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  caja/.style={draw, rounded corners=2pt, minimum height=0.85cm, align=center},
+  fl/.style={-{Latex[length=2mm]}, semithick},
+  ev/.style={-{Latex[length=2mm]}, semithick, densely dashed, gray!70!black},
+  x=1cm, y=1cm
+]
+\node[caja, fill=black!5, minimum width=9.4cm] (todos) at (0,0)
+  {54 sujetos del conjunto de datos};
+
+\node[caja, fill=blue!8,   minimum width=4.6cm] (tr) at (-2.4,-1.7)
+  {51 sujetos de entrenamiento};
+\node[caja, fill=blue!20,  minimum width=2.0cm] (va) at ( 2.0,-1.7)
+  {2 sujetos\\[-3pt] \scriptsize parada temprana};
+\node[caja, fill=orange!25, minimum width=2.2cm] (te) at ( 4.6,-1.7)
+  {sujeto $s$\\[-3pt] \scriptsize \textbf{no visto}};
+\draw[fl] (todos.south -| tr.north) -- (tr.north);
+\draw[fl] (todos.south -| va.north) -- (va.north);
+\draw[fl] (todos.south -| te.north) -- (te.north);
+
+\node[caja, fill=blue!8,  minimum width=2.6cm] (entren) at (-3.4,-3.4)
+  {entrenamiento\\[-3pt] \scriptsize 90\,\% de los ensayos};
+\node[caja, fill=green!20, minimum width=1.8cm] (visto) at (-1.0,-3.4)
+  {\textbf{visto}\\[-3pt] \scriptsize 10\,\%};
+\draw[fl] (tr.south -| entren.north) -- (entren.north);
+\draw[fl] (tr.south -| visto.north) -- (visto.north);
+
+\node[caja, fill=black!10, minimum width=2.6cm] (modelo) at (-3.4,-5.1)
+  {modelo\\[-3pt] \scriptsize entrenado una vez};
+\draw[fl] (entren) -- (modelo);
+
+\draw[ev] (modelo.south) -- (-3.4,-6.2) -- (-1.0,-6.2)
+      node[midway, below, font=\scriptsize] {evalúa} -- (visto.south);
+\draw[ev] (modelo.south) -- (-3.4,-6.9) -- (4.6,-6.9)
+      node[midway, below, font=\scriptsize] {evalúa} -- (te.south);
+
+\node[font=\scriptsize, anchor=west] at (-0.05,-3.4) {\;$\rightarrow m_{\text{visto}}$};
+\node[font=\scriptsize, anchor=west] at ( 5.7,-1.7) {\;$\rightarrow m_{\text{no visto}}$};
+
+\node[caja, draw=black, thick, fill=yellow!15, minimum width=6.4cm] (dsi) at (0,-8.3)
+  {$\mathrm{IDS} = \dfrac{m_{\text{visto}} - m_{\text{no visto}}}{m_{\text{visto}}}$};
+\end{tikzpicture}
+\caption{Esquema de particiones para el cálculo del indicador de degradación.
+En cada uno de los 54 \textit{folds} \loso{}, un sujeto queda excluido por completo
+(\emph{no visto}), dos sujetos completos determinan la parada temprana y se reserva el
+10\,\% de los ensayos de los 51 de entrenamiento (\emph{visto}), estratificado por
+sujeto, clase y sesión. Ambos conjuntos se evalúan con el mismo modelo y los mismos
+pesos, y ninguno de los dos interviene en la selección del modelo.}
+\label{fig:particiones}
+\end{figure}
+
+\subsection{Criterio operativo de robustez}
+\label{sec:criterio-robustez}
+
+El objetivo general de este trabajo plantea la identificación de la arquitectura de mayor
+robustez ante el cambio de dominio, lo que exige una definición operativa del término. La
+exactitud promedio no la proporciona: las cuatro arquitecturas quedan comprendidas en un
+intervalo de $4.6$ puntos en el protocolo \loso{}, y los contrastes pareados de la
+sección~\ref{sec:estadistica} no sostienen una diferencia entre las tres primeras.
+Calificar como más robusta a la de media más alta equivaldría a atribuir significado a una
+diferencia que los datos no respaldan.
+
+Se define aquí la robustez como la estabilidad del desempeño ante desplazamientos del
+dominio, y se evalúa sobre tres ejes independientes, medidos con los protocolos descritos
+en las secciones precedentes.
+
+El primero es la \textbf{degradación ante participantes no vistos}, cuantificada mediante
+el \dsi{} de la sección~\ref{sec:dsi}, que compara un mismo conjunto de pesos sobre
+participantes vistos y no vistos. Valores menores corresponden a mayor robustez, con una
+salvedad que afecta también al segundo eje: un clasificador en el nivel del azar tendría un
+indicador nulo sin ser robusto, de modo que ambos índices se interpretan junto con la
+exactitud sobre participantes no vistos.
+
+El segundo es la \textbf{degradación ante un protocolo de adquisición distinto}. Se
+introduce para ello un indicador análogo al anterior, el \textbf{\idp{}, índice de
+degradación por protocolo}, construido sobre la misma lógica de un único conjunto de pesos
+evaluado en dos conjuntos de prueba:
+
+\begin{equation}
+\mathrm{IDP} =
+  \frac{m_{\text{participante nuevo}} - m_{\text{protocolo nuevo}}}
+       {m_{\text{participante nuevo}}}
+\label{eq:idp}
+\end{equation}
+
+donde $m_{\text{participante nuevo}}$ corresponde a participantes no vistos del conjunto de
+origen y $m_{\text{protocolo nuevo}}$ a participantes del conjunto externo. Ambos términos
+comparten la condición de no haber sido vistos durante el entrenamiento, de modo que la
+diferencia entre ellos no vuelve a contabilizar el cambio de persona que el \dsi{} ya recoge.
+Lo que mide es el cambio de protocolo de adquisición en sentido amplio, un factor compuesto
+de los elementos de la tabla~\ref{tab:armonizacion}, y no un factor aislado. Su cálculo exige el protocolo de sujetos apartados descrito
+en la sección~\ref{sec:protocolos-extra}, pues un modelo entrenado sobre la totalidad de los
+participantes no deja ninguno sin ver y no puede producir el primero de los dos términos.
+Los dos índices son adimensionales, pero no proceden del mismo régimen: el \dsi{} se calcula
+en \loso{} con $51$ sujetos de entrenamiento y $62$ canales, y el \idp{} con un único modelo
+de $44$ sujetos y $45$ canales. La comparación de sus magnitudes es, por tanto, aproximada.
+
+El tercero es la \textbf{estabilidad entre participantes}. La exactitud promedio no informa
+sobre cómo se reparte el desempeño entre las personas, reparto que resulta determinante
+para una interfaz destinada a usuarios arbitrarios. Se cuantifica mediante la desviación
+típica de la exactitud por participante, el percentil $5$ de esa distribución y el número
+de participantes situados por debajo del umbral funcional del $70$\,\%.
+
+Los tres ejes se reportan de forma conjunta y no se agregan en un índice único. La
+agregación requeriría fijar pesos relativos que ninguna consideración del problema
+justifica, y encubriría el hecho, relevante en sí mismo, de que las arquitecturas se
+ordenan de manera distinta según el eje considerado.
+
+La interpretación del tercer eje admite una ambigüedad que conviene resolver de antemano.
+Una arquitectura cuya exactitud media se aproxima al azar comprime necesariamente el rango
+de su distribución por participante, de modo que una desviación baja resulta compatible
+tanto con un desempeño estable como con una capacidad discriminativa reducida y uniforme.
+El percentil $5$ y el recuento bajo umbral separan ambas situaciones, razón por la cual el
+eje no se sustenta en la desviación de forma exclusiva. A ello se añade que los tres ejes
+se estiman con tres semillas por arquitectura (sección~\ref{sec:semillas-por-arq}), cuya
+desviación, calculada con tres valores, es una estimación gruesa, y que el régimen de
+optimización no es homogéneo entre esas semillas en \eegnet{}, el Conformer y LaBraM
+(sección~\ref{sec:recorte-gradiente}); por ello las diferencias de pequeña magnitud entre
+arquitecturas conservan carácter indicativo.
+
+\subsection{Análisis estadístico}
+\label{sec:estadistica}
+
+\subsubsection{Métricas}
+
+Se reportan dos. La \textbf{exactitud} es la proporción de ensayos clasificados
+correctamente; con dos clases equiprobables, el azar está en 0.50. El
+\textbf{coeficiente kappa} \cite{cohen1960} mide lo mismo pero descontando los aciertos
+esperables por azar: vale 0 cuando el modelo no aporta nada sobre adivinar y 1
+cuando acierta todo. Con dos clases balanceadas en el conjunto de prueba, como es el caso,
+kappa es una transformación lineal exacta de la exactitud, $\kappa = 2\,\mathrm{exactitud}-1$,
+de modo que ambas métricas ordenan igual y producen los mismos contrastes; que coincidan no
+constituye una corroboración. Se reporta kappa porque el \dsi{} calculado sobre él mide la
+degradación relativa al exceso sobre el azar, que no depende del nivel base de $0.5$.
+
+\subsubsection{Comparación entre arquitecturas}
+
+Todas las arquitecturas se evalúan sobre \textbf{las mismas 54 particiones}, con
+los mismos sujetos en el mismo orden. Esto permite compararlas sujeto a sujeto en
+lugar de comparar solo los promedios, que es más informativo: la variabilidad
+entre personas es grande y podría impedir detectar una diferencia real entre modelos.
+
+Para decidir si una diferencia observada es atribuible al azar se emplea la
+\textbf{prueba de Wilcoxon para muestras pareadas} \cite{wilcoxon1945}, que compara los
+resultados sujeto por sujeto sin suponer que sigan una distribución normal. Es bilateral,
+sobre los $54$ pares, y reparte las diferencias nulas entre ambos signos
+(\texttt{zero\_method="zsplit"} de SciPy). Se acompaña
+siempre del número de sujetos en que cada arquitectura resulta mejor, que es una
+lectura directa de la consistencia del efecto, y del tamaño de efecto
+$r = |Z|/\sqrt{n}$ \cite{fritz2012}, con $Z = \Phi^{-1}(1 - p/2)$ reconstruido a partir del
+valor $p$ bilateral y $n = 54$. Las cuatro arquitecturas cuentan con tres
+semillas en los dos protocolos. Los contrastes se calculan sobre la media de las tres semillas
+($2026$, $2027$ y $2028$) de cada participante, de modo que cada participante aporta un valor por
+arquitectura, el número de pares es siempre $54$ y las semillas no se tratan como réplicas
+independientes (sección~\ref{sec:estadistica-variantes}); los resultados con la
+semilla $2026$ sola y por semilla se informan en la
+sección~\ref{sec:variabilidad-semillas}.
+
+Cada protocolo y cada métrica constituyen una familia de seis contrastes, uno por par de
+arquitecturas, fijada antes de calcular las cifras con tres semillas. Se reportan los valores $p$
+sin corregir y corregidos por Holm \cite{holm1979} dentro de cada familia; con tres semillas la
+corrección no cambia ninguna conclusión de significación. La corrección de Holm ordena
+los $m$ valores $p$ de menor a mayor, multiplica el $i$-ésimo por $m - i + 1$ e impone que
+la secuencia ajustada no decrezca.
+
+\subsubsection{Equivalencia práctica}
+\label{sec:equivalencia}
+
+Que una diferencia no alcance significación no demuestra que sea pequeña, ni tampoco lo
+demuestra un tamaño de efecto observado reducido. Para sostener que dos arquitecturas rinden
+igual se emplea un criterio de equivalencia \cite{schuirmann1987,lakens2017}: se fija un
+margen $\delta$, se plantea como hipótesis nula $|\Delta| \geq \delta$ frente a la
+alternativa $|\Delta| < \delta$, y se declaran
+equivalentes cuando el intervalo de confianza al $90$\,\% de su diferencia pareada queda
+íntegramente dentro de $(-\delta,\ +\delta)$, lo que corresponde a dos contrastes unilaterales
+al $5$\,\%. El intervalo se obtiene por remuestreo pareado de percentiles
+(sección~\ref{sec:bootstrap}) y se aplica a la exactitud por participante, en \loso{} y en
+intra-sujeto, calculada como media de las tres semillas de cada participante, de modo que la
+variabilidad por inicialización se promedia dentro del participante y no queda incorporada en el
+intervalo. Como comprobación se informan también el intervalo jerárquico de sujetos y semillas
+(sección~\ref{sec:variabilidad-metodo}), que sí la incorpora, y el contraste TOST con la prueba de
+Wilcoxon (corrección de Holm en la familia de seis) y con la $t$ de Student.
+
+Se fija $\delta = 0.03$ de exactitud. Equivale a entre un quinto y un tercio de la
+desviación entre participantes, de $0.10$ a $0.15$ según arquitectura y protocolo, y es del
+orden de la variabilidad entre semillas de la exactitud media de un participante, de
+$0.016$ a $0.025$ en el protocolo intra-sujeto y de $0.019$ a $0.025$ en \loso{}, con las cuatro
+arquitecturas y tres semillas. El margen se
+fijó después de un primer análisis de los datos y no de forma previa. Por ese motivo, la
+sección~\ref{sec:wilcoxon} informa también el menor margen con el que se cumpliría la
+equivalencia.
+
+\textbf{Criterios de equivalencia informados.} Con el margen $\delta = 0.03$ de la
+sección~\ref{sec:equivalencia} se informan tres criterios, para que la conclusión no
+dependa de uno solo: el intervalo al $90$\,\% por remuestreo pareado dentro de
+$(-\delta, +\delta)$; la prueba de dos contrastes unilaterales con Wilcoxon, corregida por
+Holm en la familia de seis; y la misma con la prueba $t$, sin corregir. Se aplica también al
+protocolo intra-sujeto. No se interpreta un resultado no significativo como ausencia de
+efecto: se informa como que no se detecta diferencia y, si procede, con el resultado de
+equivalencia; y un resultado significativo se acompaña de la magnitud.
+
+
+\subsubsection{Intervalos de confianza por remuestreo}
+\label{sec:bootstrap}
+
+El contraste de Wilcoxon indica si una diferencia es atribuible al azar, pero no cuánta
+incertidumbre acompaña a cada cifra reportada. Para acotarla se emplea el
+\textbf{remuestreo con reemplazo} (\textit{bootstrap}) \cite{efron1979} sobre los valores por participante
+que el entrenamiento ya produjo, procedimiento que no requiere entrenar ningún modelo
+adicional.
+
+De los $54$ valores por participante de una arquitectura se extraen, con reemplazo, $54$
+valores; se calcula la media de esa extracción; y el procedimiento se repite
+$B = 10\,000$ veces. El intervalo de confianza al $95$\,\% son los percentiles $2.5$ y
+$97.5$ de esa distribución, sin corrección de sesgo. La semilla del remuestreo se fija en
+$2026$, de modo que dos ejecuciones producen cifras idénticas; como cada cantidad consume
+el generador en un orden distinto, la referencia para reproducir una cifra concreta es la
+función del verificador que la calcula. El remuestreo trata los \textit{folds} \loso{} como
+independientes, aunque comparten $49$ de sus $51$ sujetos de entrenamiento.
+
+La aplicación del procedimiento al \dsi{} requiere una precisión adicional. El remuestreo
+se realiza sobre los \textit{folds} y el indicador se recalcula en cada extracción con la
+ecuación~\eqref{eq:dsi} aplicada a las medias, que es la forma en que se reporta; promediar
+el indicador de cada \textit{fold} estimaría una cantidad distinta. En las diferencias
+entre arquitecturas, por su parte, la extracción de participantes es común a las dos
+arquitecturas del par, pues remuestrear cada una por separado destruiría la correlación
+entre ellas e inflaría el intervalo de forma artificial.
+
+Con tres semillas se añade un remuestreo jerárquico. En cada una de las $B = 10\,000$ repeticiones
+se extraen con reemplazo $54$ participantes, dentro de cada uno se extraen con reemplazo sus tres
+semillas, con índices independientes entre arquitecturas, y se promedian las semillas antes de
+calcular la diferencia o el indicador. Remuestrear en los dos niveles cuenta dos veces el ruido de
+semilla, que ya forma parte de la dispersión entre participantes, de modo que estos intervalos son
+algo conservadores; con solo tres semillas son además una aproximación tosca de la variación por
+inicialización. Los intervalos de remuestreo solo de participantes difieren de los jerárquicos en
+menos de $0.003$ en las diferencias entre arquitecturas.
+
+Los intervalos no incorporan corrección por comparaciones múltiples. Se reportan como
+descripción de la incertidumbre de cada cifra; las afirmaciones sobre diferencias entre
+arquitecturas se sustentan en el contraste pareado, con la comprobación de Holm descrita
+arriba.
+
+\subsubsection{Criterio para declarar degradación}
+
+Se declara degradación por cambio de dominio únicamente si se cumplen dos
+condiciones: que el \dsi{} sea positivo y que la diferencia entre el conjunto
+visto y el no visto no sea atribuible al azar, según un contraste de Wilcoxon bilateral
+entre la exactitud en vistos y en no vistos sobre los $54$ \textit{folds}, con
+$\alpha = 0.05$. Si solo se cumple la primera, se
+reporta el valor indicando expresamente que no es concluyente.
+
+Estas dos condiciones se fijaron antes de ejecutar las arquitecturas restantes. La
+corrección de Holm sobre los cuatro contrastes, uno por arquitectura, se incorporó
+\textbf{después} de conocer los resultados de las cuatro, y determina la clasificación de una
+de ellas: sin corrección, EEGMamba ($p = 0.038$) también se declararía degradada. Por eso
+la sección~\ref{sec:dsi-resultados} informa ambos valores.
+
+\subsubsection{Contrastes de las variantes y familias de comparaciones múltiples}
+\label{sec:estadistica-variantes}
+
+\textbf{Unidad y contraste.} La unidad de análisis es el sujeto ($n = 54$). En el protocolo
+intra-sujeto, la exactitud de un sujeto en una semilla es la media de sus $20$ particiones;
+en \loso{} es la de su \textit{fold}. Cuando hay varias semillas, se promedian dentro del sujeto o
+se modelan como factor anidado; nunca se tratan como réplicas independientes. El contraste
+de una variante es la diferencia por sujeto entre la variante y su referencia de la misma
+semilla. Para cada contraste se informa la media y la mediana de la diferencia, el
+intervalo al $95$\,\% por remuestreo de sujetos (percentiles, $B = 10\,000$, con un
+generador \texttt{numpy.random.default\_rng(2026)} nuevo para cada contraste), la prueba de
+Wilcoxon bilateral con reparto de las diferencias nulas, el tamaño de efecto $r$ y el número
+de sujetos que mejoran y empeoran, como en los contrastes entre arquitecturas descritos arriba. Dado que kappa
+es una transformación lineal de la exactitud, se contrasta la exactitud.
+
+\textbf{Familias de comparaciones múltiples.} La corrección de Holm se aplica dentro de
+cada familia, definida antes de calcular los contrastes de las variantes y de las semillas adicionales (resumen en la tabla~\ref{tab:familias}):
+
+\begin{itemize}
+  \item entre arquitecturas, seis contrastes por protocolo, métrica y variante de semilla
+  (semilla $2026$, media de tres semillas, media de $2027$ y $2028$);
+  \item ablaciones intra-sujeto, una familia por arquitectura: ocho contrastes para
+  \eegnet{} y para el Conformer, y tres para LaBraM y para EEGMamba;
+  \item \loso{} con alineamiento: cuatro contrastes, uno por arquitectura; \loso{} con
+  reflexión de canales: cuatro, uno por arquitectura;
+  \item calibración con pocos ensayos: veinticuatro contrastes de ganancia frente a cero
+  (cuatro arquitecturas, dos valores de $k$, tres métodos), para los modelos base y,
+  aparte, otros veinticuatro para los de la variante con alineamiento; el contraste de
+  equivalencia de cada una forma una familia propia de veinticuatro;
+  \item comparación de las políticas de normalización del destino: ocho contrastes;
+  \item alineamiento en la transferencia: doce contrastes (tres evaluaciones por cuatro arquitecturas).
+\end{itemize}
+
+Como lectura secundaria declarada se aplica Holm sobre los $22$ contrastes de las
+ablaciones a la vez y sobre los $8$ de \loso{} con alineamiento y con reflexión a la vez. Como
+análisis de sensibilidad, se repiten las familias de alineamiento, reflexión y las
+ablaciones de LaBraM y EEGMamba con la referencia sustituida por la media por sujeto de las
+semillas $2027$ y $2028$ de la base, entrenadas con recorte; para \eegnet{} y el Conformer en
+intra-sujeto no existe esa referencia, porque sus semillas $2027$ y $2028$ se entrenaron sin
+recorte (tabla~\ref{tab:regimen}). Todo análisis fuera de estas familias es exploratorio y no se
+corrige.
+
+
+\subsubsection{Variabilidad por semilla de las diferencias}
+\label{sec:variabilidad-metodo}
+
+\textbf{Variabilidad por semilla de las diferencias.} Para cada contraste entre
+arquitecturas se calcula la diferencia media por semilla (emparejando semillas por índice) y
+la desviación típica de esos tres valores, con la salvedad de que tres valores dan dos
+grados de libertad. Además, el intervalo de la diferencia de las medias de tres semillas
+se obtiene con el remuestreo jerárquico descrito en la sección~\ref{sec:bootstrap}, con un
+generador \texttt{default\_rng(2026)} nuevo por contraste. El mismo procedimiento, con los \textit{folds} \loso{}
+como unidad en el \dsi{} y con los sujetos apartados y los de WBCIC-SHU como unidades del
+\idp{}, da los intervalos jerárquicos de ambos índices.
+
+
+\subsection{Control de fuga de datos}
+
+El particionado \loso{}, el intra-sujeto y el conjunto de vistos están cubiertos por
+\textbf{41 pruebas automatizadas}: 22
+sobre el particionado \loso{} y la separación de sujetos apartados, 12 sobre el
+intra-sujeto y 7 sobre el conjunto reservado. No las tienen, en cambio, las funciones que
+construyen el protocolo global, el de sujetos apartados y el $20$\,\% reservado de
+WBCIC-SHU; para esos tres se comprobó que los recuentos de segmentos coinciden con los
+esperados. Las pruebas verifican, entre otras condiciones, que ningún ensayo reservado
+participe en el entrenamiento, que provenga de sujetos de entrenamiento, que
+esté estratificado por clase y sesión, y que los estadísticos de normalización
+se ajusten exclusivamente sobre el conjunto de entrenamiento reducido.
+
+\subsection{Cota del efecto del cambio de régimen}
+\label{sec:cota-confusor}
+
+Para acotar cuánto del cambio entre la semilla $2026$ y las semillas $2027$ y $2028$ puede
+deberse al régimen y no al azar, se calcula para cada sujeto $d_{\mathrm{cruce}} =
+\mathrm{exac}(2026) - \tfrac12\bigl(\mathrm{exac}(2027) + \mathrm{exac}(2028)\bigr)$, con la
+exactitud media del sujeto en cada semilla, y $d_{\mathrm{intra}} = \mathrm{exac}(2027) -
+\mathrm{exac}(2028)$. Si el régimen no importara y el ruido de semilla tuviera la misma
+varianza en las tres, ambas diferencias tendrían media cero, y la varianza de
+$d_{\mathrm{cruce}}$ sería $0.75$ veces la de $d_{\mathrm{intra}}$. EEGMamba, que no cambia de
+recorte, actúa como control; en el protocolo intra-sujeto, \eegnet{} y el Conformer, que
+nunca tuvieron recorte, son un control sin cambio de recorte ni de hardware entre
+semillas.
+
+La cota del efecto sobre la exactitud media por sujeto es el mayor valor absoluto de los
+extremos del intervalo al $95$\,\% (percentiles de un remuestreo de sujetos, $B = 10\,000$) de
+la media de $d_{\mathrm{cruce}}$, o de su diferencia con la de EEGMamba si esa es mayor. En
+una media de tres semillas, de las cuales una se entrenó sin recorte, la contaminación
+máxima es la tercera parte de la cota. El análisis supone aditividad (el cambio de régimen
+suma un desplazamiento constante a la exactitud de cada sujeto) y ruido de semilla
+independiente; el cambio de régimen es compuesto (recorte, hardware y código) y no puede
+separarse; y el control de EEGMamba supone que su sensibilidad al hardware y al código es la
+de las demás arquitecturas, lo cual no es verificable. Es un análisis exploratorio y sus
+pruebas no se corrigen por comparaciones múltiples.
+
+El hardware de ambos regímenes difiere (tabla~\ref{tab:hardware}); no se interpreta ninguna
+diferencia como efecto del hardware.
+
+
+% =====================================================================
+%  RESULTADOS
+% =====================================================================

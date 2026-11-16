@@ -1,0 +1,7 @@
+sub,n_epocas,n_comp_excluidos,etiquetas,acc_frontal_ICA,acc_motor_ICA,acc_todos_ICA
+sub-01,117,7,eye blink,0.292,0.3507,0.2739
+sub-03,120,7,eye blink,0.2083,0.2833,0.25
+sub-08,120,6,eye blink,0.5083,0.3,0.375
+sub-15,112,3,eye blink,0.4119,0.2862,0.2688
+sub-20,120,6,eye blink,0.3333,0.375,0.325
+sub-26,116,4,eye blink,0.379,0.4822,0.467

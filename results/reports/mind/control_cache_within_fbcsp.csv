@@ -1,0 +1,7 @@
+sub,n_trials,acc,kappa,channels,norm,segundos
+sub-01,119,0.2692,0.0253,motor_ext,None,10.4
+sub-03,109,0.3039,0.0712,motor_ext,None,9.4
+sub-08,120,0.3417,0.1222,motor_ext,None,10.4
+sub-15,80,0.25,0.006,motor_ext,None,7.6
+sub-20,114,0.3771,0.1646,motor_ext,None,9.7
+sub-26,115,0.4435,0.2598,motor_ext,None,9.6

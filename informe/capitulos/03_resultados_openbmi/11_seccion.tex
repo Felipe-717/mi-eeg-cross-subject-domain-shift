@@ -1,0 +1,64 @@
+\section{Limitaciones}
+\label{sec:limitaciones}
+
+Las limitaciones siguientes condicionan la interpretación de los resultados; los análisis sin corrección
+por comparaciones múltiples son exploratorios.
+
+\begin{itemize}
+  \item \textbf{Cambio de régimen entre semillas.} Las bases del primer régimen de \eegnet{}, el Conformer y
+        LaBraM se entrenaron sin recorte de gradiente, en GPU A40 y con otra versión del código de entrenamiento; las del segundo llevan recorte y GPU L40S. El contraste de cada variante con la base de la
+        semilla $2026$ está confundido, en esas tres arquitecturas, con este cambio compuesto. Su cota
+        ($0.010$ a $0.020$ de exactitud, tabla~\ref{tab:confusor}) descarta un efecto medio mayor, no uno nulo.
+        En el protocolo intra-sujeto de \eegnet{} y del Conformer no existe base con recorte, la cota no es
+        estimable y sus $16$ contrastes de ablación se informan como condicionados al régimen; no se
+        rehízo esa base por presupuesto de cómputo. No se midió la fracción de pasos de
+        optimización en que el recorte actúa.
+  \item \textbf{Variantes con una sola semilla.} Todas las variantes (ablaciones, alineamiento, reflexión de
+        canales) se ejecutaron con la semilla $2026$, por decisión de presupuesto previa a los resultados.
+        Su variabilidad por semilla no está incorporada y sus equivalencias valen para esa semilla (el
+        desplazamiento medio entre semillas llega a $0.008$ a $0.009$). Lo mismo vale para las variantes con
+        alineamiento en la validación externa.
+  \item \textbf{Ablaciones recortadas en LaBraM y EEGMamba.} En estas dos arquitecturas solo se ejecutaron la
+        reflexión de canales, el ruido en Fourier y la ventana de \seg{0} a \seg{2}, por coste de cómputo y
+        con decisión previa a los resultados; los efectos de subbanda no se extienden a ellas.
+  \item \textbf{Ruido en Fourier.} La amplitud $\sigma = 0.1$ es una elección propia y no se probaron otras.
+  \item \textbf{Selección del modelo intra-sujeto.} La parada temprana con $36$ ensayos conserva con
+        frecuencia un modelo de las épocas de calentamiento, y en $21$ de los $22$ contrastes de ablación el
+        signo del efecto coincide con el del cambio en esa proporción; las diferencias intra-sujeto no se
+        atribuyen por tanto a la capacidad ni a la representación.
+  \item \textbf{Tres semillas.} La desviación entre semillas tiene dos grados de libertad y es una estimación
+        gruesa; las semillas se emparejan por índice aunque sus inicializaciones son independientes, y los
+        \textit{folds} \loso{} se tratan como independientes aunque comparten $49$ de sus $51$ sujetos de
+        entrenamiento. Los intervalos por remuestreo de sujetos no incorporan la variabilidad por semilla; el
+        jerárquico sí, y es ligeramente conservador.
+  \item \textbf{Calibración.} Con el procedimiento probado no hubo ganancia; no se ajustaron los
+        hiperparámetros, se calibró y evaluó sobre las mismas sesiones (escenario favorable) y no se calibró el
+        modelo transferido ni se repitió la ejecución, de modo que no se descarta que otro procedimiento sea
+        útil.
+  \item \textbf{Alineamiento euclidiano transductivo.} Estima la covarianza con todos los segmentos sin
+        etiqueta del participante de prueba, por lo que sus resultados no son \textit{zero-shot} estricto.
+  \item \textbf{Diez sujetos apartados, de un solo sorteo.} La caída por persona se estima sobre $10$
+        sujetos que rinden entre $2.2$ y $3.1$ puntos menos que el resto en \loso{}; sus intervalos no la
+        distinguen de la caída por protocolo y el \idp{} hereda esa imprecisión (amplitud de $0.16$ a $0.21$).
+        Además, su columna de sujetos vistos comparte sesión con el entrenamiento, lo que tiende a
+        sobrestimar la caída por persona.
+  \item \textbf{Protocolo de adquisición como factor compuesto.} Las diferencias residuales de
+        armonización (tabla~\ref{tab:armonizacion}), la asimetría de volumen entre conjuntos ($144$ segmentos
+        por persona en WBCIC-SHU frente a $360$) y la referencia de promedio común calculada sobre conjuntos de
+        electrodos distintos forman parte de ese factor y no se separan de él. El \dsi{} y el \idp{} proceden
+        de protocolos distintos y sus magnitudes no son comparables entre sí.
+  \item \textbf{Modelo nativo y preentrenamiento.} El modelo nativo de WBCIC-SHU vio a los $51$ participantes,
+        de modo que su cifra es un límite superior sobre sujetos vistos, y no hay protocolo entre sujetos
+        dentro de ese conjunto. La ausencia de WBCIC-SHU en el preentrenamiento de LaBraM se comprobó solo
+        frente a las fuentes declaradas por sus autores.
+  \item \textbf{Normalización del destino.} Las políticas por segmento y por sujeto se aplican a un modelo
+        entrenado con los estadísticos del origen; el contraste descarta una diferencia de ganancia global
+        como explicación de la caída, no cualquier diferencia de escala.
+  \item \textbf{Reserva vista y artefactos residuales.} El conjunto visto del \dsi{} comparte sesión con el
+        entrenamiento. Cuatro sujetos quedan marcados por el control ocular tras la limpieza; su efecto se
+        acota (sección~\ref{sec:sensibilidad}), pero no se elimina.
+\end{itemize}
+
+% =====================================================================
+%  DECISIONES
+% =====================================================================

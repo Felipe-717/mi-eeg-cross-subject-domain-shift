@@ -1,0 +1,4 @@
+sub,n_trials,n_frontal,n_motor,acc_frontal,acc_motor,acc_todos,acc_proxy_EOG,acc_motor_sin_EOG,caida_por_EOG
+sub-29,400,10,12,0.9175,0.9375,0.9425,0.715,0.9425,-0.005
+sub-07,400,10,12,0.5125,0.72,0.775,0.53,0.7175,0.0025
+sub-01,400,10,12,0.465,0.81,0.7375,0.48,0.81,0.0

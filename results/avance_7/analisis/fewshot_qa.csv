@@ -1,0 +1,9 @@
+variante,arq,filas,esperadas,sujetos,semillas,duplicados,metodos_por_sorteo_ok,nan_acc,cfg_hash,n_calib_ok,n_eval_ok,humo
+base,conformer,4320,4320,54,"[2027, 2028]",0,True,0,6f16811d008d,True,True,False
+base,eegmamba,4320,4320,54,"[2027, 2028]",0,True,0,eabca26d5bdf,True,True,False
+base,eegnet,4320,4320,54,"[2027, 2028]",0,True,0,221b9bb4d26a,True,True,False
+base,labram,4320,4320,54,"[2027, 2028]",0,True,0,aad8ea7882e6,True,True,False
+ea,conformer,2160,2160,54,[2026],0,True,0,6f16811d008d,True,True,False
+ea,eegmamba,2160,2160,54,[2026],0,True,0,eabca26d5bdf,True,True,False
+ea,eegnet,2160,2160,54,[2026],0,True,0,221b9bb4d26a,True,True,False
+ea,labram,2160,2160,54,[2026],0,True,0,aad8ea7882e6,True,True,False
