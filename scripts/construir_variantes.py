@@ -22,15 +22,15 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--origen", required=True)
     ap.add_argument("--destino", required=True)
-    ap.add_argument("--tipo", required=True, choices=["ea", "banda"])
+    ap.add_argument("--tipo", required=True, choices=["ea", "banda", "banda_fir"])
     ap.add_argument("--banda", type=float, nargs=2, default=None, metavar=("LO", "HI"))
     ap.add_argument("--dataset", default="openbmi", choices=list(datasets.disponibles()),
                     help="solo para resolver la vista de --canales")
     ap.add_argument("--canales", default=None, help="vista de canales del dataset")
     ap.add_argument("--forzar", action="store_true")
     a = ap.parse_args()
-    if a.tipo == "banda" and not a.banda:
-        ap.error("--tipo banda exige --banda LO HI")
+    if a.tipo in ("banda", "banda_fir") and not a.banda:
+        ap.error("--tipo banda o banda_fir exige --banda LO HI")
     canales = None
     if a.canales:
         canales = datasets.get(a.dataset).CH_SETS[a.canales]

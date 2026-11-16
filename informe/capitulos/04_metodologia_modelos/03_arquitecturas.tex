@@ -1,0 +1,465 @@
+\section{Fase 3: arquitecturas e implementación}
+\label{sec:fase3}
+
+Se implementaron y evaluaron cuatro arquitecturas para señales de electroencefalografía (EEG): la de
+referencia (\eegnet{}), el Conformer, el modelo fundacional LaBraM (variante Base) y
+EEGMamba, cuya comparación se presenta en la sección~\ref{sec:comparacion}. EEGMamba
+requirió las adaptaciones específicas descritas en la
+sección~\ref{sec:eegmamba-adapt}.
+
+LaBraM Base fue el único modelo fundacional empleado: se utilizaron pesos preentrenados y ajuste fino completo. EEGMamba se trató como una arquitectura de espacio de estados y se entrenó desde cero, al igual que el Conformer.
+
+\subsection{Representación de entrada y procesamiento por arquitectura}
+\label{sec:representaciones}
+
+Las cuatro arquitecturas reciben la misma señal preprocesada, pero no la consumen de la
+misma forma. Esta sección detalla qué hace cada una con ella, porque la
+interpretación de los resultados depende de ello: dos de las cuatro operan sobre la forma
+de onda continua y las otras dos la fragmentan en parches de un segundo. Las dimensiones que
+se indican, $62$ canales por $801$ muestras, son las de los protocolos sobre \openbmi{}; en
+el capítulo~\ref{cap:validacion-externa} la entrada tiene los $45$ canales comunes a los
+dos conjuntos, y el número de parámetros de la capa que depende de los canales cambia en
+consecuencia.
+
+\subsubsection{\eegnet{}: convolución separable sobre la señal continua}
+
+\eegnet{} \cite{lawhern2018}, en la implementación de \texttt{braindecode} 1.6.1
+\cite{schirrmeister2017} con sus hiperparámetros por defecto, consume el tensor $(C \times T) = (62 \times 801)$ sin ninguna transformación intermedia.
+Su primer bloque aplica convoluciones \emph{temporales}, cuyos núcleos actúan como filtros
+de banda aprendidos; el segundo aplica una convolución \emph{en profundidad} sobre el eje
+de canales, un filtro espacial por cada filtro temporal, que cumple un papel análogo al de
+los patrones espaciales comunes; el tercero combina ambos ejes con una convolución
+separable. Un promediado temporal y una capa lineal producen los logits
+(figura~\ref{fig:arq-eegnet}). Con $62$ canales
+tiene $2\,898$ parámetros, de dos a algo más de tres órdenes de magnitud menos que las demás.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  b/.style={draw, rounded corners=2pt, minimum height=0.7cm, align=center, fill=blue!8},
+  fl/.style={-{Latex[length=1.6mm]}, semithick}, x=1cm, y=1cm
+]
+\node[b, minimum width=1.9cm] (in) at (0,0) {$62 \times 801$\\señal continua};
+\node[b, minimum width=2.0cm] (t)  at (2.6,0) {conv.\ temporal\\(filtros de banda)};
+\node[b, minimum width=2.0cm] (e)  at (5.3,0) {conv.\ en profundidad\\(filtros espaciales)};
+\node[b, minimum width=1.9cm] (sp) at (7.9,0) {conv.\ separable\\+ promediado};
+\node[b, minimum width=1.2cm, fill=orange!18] (o) at (10.0,0) {lineal\\2 clases};
+\foreach \a/\bb in {in/t,t/e,e/sp,sp/o} \draw[fl] (\a) -- (\bb);
+\end{tikzpicture}
+\caption{\eegnet{}. Opera sobre la señal continua; separa el filtrado temporal del
+espacial, en ese orden.}
+\label{fig:arq-eegnet}
+\end{figure}
+
+\subsubsection{Conformer: convolución seguida de atención}
+
+El EEG-Conformer \cite{song2023conformer}, también en la implementación de
+\texttt{braindecode} con sus hiperparámetros por defecto, recibe el mismo tensor
+$(62 \times 801)$ que \eegnet{} y no necesita adaptador. Un bloque
+convolucional inicial, temporal y después espacial, transforma la señal en una secuencia de
+vectores o \emph{tokens}; sobre esa secuencia actúa un codificador con autoatención, que
+pondera cada instante en función de todos los demás en lugar de hacerlo dentro de una
+ventana local fija como la convolución. Un perceptrón produce los logits. Tiene $710\,146$
+parámetros (figura~\ref{fig:arq-conformer}).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  b/.style={draw, rounded corners=2pt, minimum height=0.7cm, align=center, fill=blue!8},
+  fl/.style={-{Latex[length=1.6mm]}, semithick}, x=1cm, y=1cm
+]
+\node[b, minimum width=1.9cm] (in) at (0,0) {$62 \times 801$\\señal continua};
+\node[b, minimum width=2.4cm] (c)  at (2.9,0) {conv.\ temporal\\+ conv.\ espacial};
+\node[b, minimum width=1.9cm, fill=green!12] (tk) at (5.7,0) {secuencia de\\\emph{tokens}};
+\node[b, minimum width=2.1cm] (at) at (8.2,0) {autoatención\\(global)};
+\node[b, minimum width=1.2cm, fill=orange!18] (o) at (10.4,0) {MLP\\2 clases};
+\foreach \a/\bb in {in/c,c/tk,tk/at,at/o} \draw[fl] (\a) -- (\bb);
+\end{tikzpicture}
+\caption{Conformer. La convolución construye los \emph{tokens} y la autoatención los
+relaciona entre sí sin restricción de distancia temporal.}
+\label{fig:arq-conformer}
+\end{figure}
+
+\subsubsection{LaBraM: parches de un segundo con identidad de canal}
+
+LaBraM \cite{jiang2024labram} es el único modelo con pesos preentrenados. Divide la ventana
+en parches de $200$ muestras,
+es decir $1$\,s a \hz{200}, lo que obliga a truncar de $801$ a $800$ y produce $4$ parches
+por canal. Cada parche se proyecta a un vector, al que se suma un \textbf{embedding de la
+identidad del canal}: la entrada incluye explícitamente el electrodo de origen
+de cada parche, información que no forma parte de la entrada de las tres arquitecturas restantes. Esa lista
+de índices se toma de un vocabulario de $128$ posiciones de electrodo, que incluye
+posiciones de los sistemas 10-10 y 10-05, y es lo que permite aplicar el
+modelo a montajes distintos. Un codificador \emph{transformer} procesa el conjunto de
+parches. Se emplea la variante Base, $5\,818\,138$ parámetros, con ajuste fino completo,
+partiendo de los pesos distribuidos en \texttt{braindecode/labram-pretrained}
+(figura~\ref{fig:arq-labram}).
+
+Tres decisiones de esta adaptación se apartan del procedimiento con que se preentrenó el
+modelo y condicionan su evaluación. La señal se le entrega normalizada por canal
+(\textit{z-score}), igual que a las demás arquitecturas, y no en microvoltios divididos por
+$100$ como en el preentrenamiento. El \emph{embedding} temporal preentrenado, de $16$
+posiciones, se interpola a las $5$ que exige la ventana de $4$\,s. La capa de clasificación
+se reinicia, y el ajuste fino usa una tasa de aprendizaje uniforme de $10^{-4}$, sin el
+decaimiento por capa del procedimiento original.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  b/.style={draw, rounded corners=2pt, minimum height=0.7cm, align=center, fill=blue!8},
+  fl/.style={-{Latex[length=1.6mm]}, semithick}, x=1cm, y=1cm
+]
+\node[b, minimum width=1.9cm] (in) at (0,0) {$62 \times 801$\\señal continua};
+\node[b, minimum width=2.2cm, fill=green!12] (pa) at (2.9,0)
+  {parches de \seg{1}\\$62 \times 4 \times 200$};
+\node[b, minimum width=2.0cm] (em) at (5.7,0) {proyección\\de cada parche};
+\node[b, minimum width=2.0cm] (tr) at (8.3,0) {\emph{transformer}\\preentrenado};
+\node[b, minimum width=1.2cm, fill=orange!18] (o) at (10.5,0) {lineal\\2 clases};
+\node[b, minimum width=2.4cm, fill=red!10] (ch) at (5.7,-1.4)
+  {índices de canal\\(vocabulario de 128)};
+\foreach \a/\bb in {in/pa,pa/em,em/tr,tr/o} \draw[fl] (\a) -- (\bb);
+\draw[fl] (ch) -- (em);
+\end{tikzpicture}
+\caption{LaBraM. Único modelo cuya entrada incluye la identidad del electrodo junto a la señal, lo
+que le permite operar sobre montajes distintos del de preentrenamiento.}
+\label{fig:arq-labram}
+\end{figure}
+
+\subsubsection{EEGMamba: espacio de estados sobre parches, con rama espectral}
+
+Se emplea la implementación pública de EEGMamba \cite{wang2025eegmamba} como arquitectura de espacio de estados entrenada desde cero. Fragmenta la ventana en los mismos $4$
+parches de $200$ muestras. Cada parche se codifica
+por dos vías que se suman: una \emph{temporal}, una convolución de $25$ filtros de
+longitud $49$ y paso $25$, y una
+\emph{espectral}, que toma el módulo de la transformada rápida de Fourier real del parche,
+$101$ coeficientes, y lo proyecta al mismo espacio; se añade una codificación posicional
+convolucional. Es la única de las cuatro cuya entrada incluye
+una representación en frecuencia de forma explícita. La secuencia resultante se procesa
+mediante una pila de $12$ bloques Mamba2 \cite{gu2023mamba,dao2024mamba2}, modelos de
+espacio de estados aplicados en ambos sentidos de la secuencia, cuyo
+costo crece de forma lineal con la longitud de la secuencia y no cuadrática como el de la
+autoatención. Se emplea la cabeza que conserva la representación por parche y canal;
+tiene $3\,376\,445$ parámetros y se entrena desde cero
+(figura~\ref{fig:arq-eegmamba}).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  b/.style={draw, rounded corners=2pt, minimum height=0.7cm, align=center, fill=blue!8},
+  fl/.style={-{Latex[length=1.6mm]}, semithick}, x=1cm, y=1cm
+]
+\node[b, minimum width=1.7cm] (in) at (0,0) {$62 \times 801$\\señal continua};
+\node[b, minimum width=2.0cm, fill=green!12] (pa) at (2.6,0)
+  {parches de \seg{1}\\$62 \times 4 \times 200$};
+\node[b, minimum width=1.7cm] (tt) at (5.1,0.75) {proyección\\temporal};
+\node[b, minimum width=1.7cm, fill=red!10] (ff) at (5.1,-0.75) {$|\text{rFFT}|$\\(101 coef.)};
+\node[b, minimum width=2.2cm] (mm) at (7.9,0) {Mamba2\\bidireccional};
+\node[b, minimum width=1.2cm, fill=orange!18] (o) at (10.2,0) {lineal\\2 clases};
+\draw[fl] (in) -- (pa);
+\draw[fl] (pa) |- (tt);
+\draw[fl] (pa) |- (ff);
+\draw[fl] (tt) -| (mm);
+\draw[fl] (ff) -| (mm);
+\draw[fl] (mm) -- (o);
+\node[font=\scriptsize] at (6.6,0) {$+$};
+\end{tikzpicture}
+\caption{EEGMamba. Suma una codificación temporal y una espectral de cada parche, y procesa
+la secuencia con bloques de espacio de estados en ambos sentidos.}
+\label{fig:arq-eegmamba}
+\end{figure}
+
+Resumiendo el contraste que importa para la comparación: \eegnet{} y el Conformer operan
+sobre la señal continua, mientras que LaBraM y EEGMamba la fragmentan en parches de un
+segundo. LaBraM es el único cuya entrada incluye la identidad del electrodo y el único preentrenado;
+EEGMamba es el único cuya entrada incluye una representación en frecuencia explícita. Ninguna de las
+cuatro abandona el dominio del tiempo como espacio de predicción, punto sobre el que vuelve
+la discusión.
+
+\subsection{Esquema de entrenamiento unificado}
+
+Todas las arquitecturas comparten el mismo esquema, con una excepción que se declara
+más abajo (el recorte de la norma del gradiente), para que la comparación
+atribuya las diferencias al modelo y no al ajuste: optimizador AdamW
+\cite{loshchilov2019adamw} con decaimiento de pesos de $0.01$,
+calentamiento lineal de $10$ épocas seguido de decaimiento coseno calculado sobre el
+máximo de $200$ épocas, suavizado de etiquetas de $0.1$ en la pérdida de entrenamiento
+(la de validación se calcula sin suavizado),
+precisión mixta automática, tamaño de lote efectivo fijo \emph{dentro de cada
+arquitectura}, y parada temprana por pérdida de validación con paciencia de 20 épocas
+sobre un máximo de 200. Al terminar se restauran los pesos de la época de menor pérdida
+de validación.
+
+Dos consecuencias de esta configuración no son evidentes y afectan a la lectura de los
+resultados. La paciencia no corre durante el calentamiento, de modo que la parada más
+temprana posible es la época $30$. Y como el coseno se calcula sobre $200$ épocas mientras
+las ejecuciones \loso{} se detienen entre las épocas $30$ y $146$, la tasa de aprendizaje
+decae poco antes de la parada en la mayoría de ellas: conserva el $97$\,\% de su valor en la
+época $30$ y el $19$\,\% en la $146$. El cómputo no es determinista bit a bit (cuDNN sin modo determinista y precisión
+mixta), así que repetir una ejecución con la misma semilla puede variar en los últimos
+decimales. Las versiones empleadas son \texttt{braindecode} 1.6.1, MNE-Python 1.12.1,
+\texttt{mne-icalabel} 0.9.0 y MOABB 1.5.0 \cite{jayaram2018moabb}. Las ejecuciones se
+agrupan en dos regímenes de entrenamiento. El \emph{primer régimen} reúne las ejecuciones
+previas (unidad de procesamiento gráfico (GPU) NVIDIA A40; recorte de la norma del gradiente solo en EEGMamba); el
+\emph{segundo régimen}, las posteriores (GPU NVIDIA L40S; recorte a $1.0$ en las cuatro
+arquitecturas). La
+tabla~\ref{tab:regimen} indica el régimen de cada semilla y la tabla~\ref{tab:hardware} el
+hardware; esta denominación se usa en el resto del documento.
+
+\textbf{Recorte de la norma del gradiente.}\label{sec:recorte-gradiente}
+En el primer régimen, las ejecuciones base intra-sujeto y \loso{} de \eegnet{}, el
+Conformer y LaBraM se entrenaron \emph{sin} recorte de la norma del gradiente, y las de
+EEGMamba con recorte a $1.0$. En el segundo régimen las cuatro arquitecturas usan recorte a
+$1.0$. La transferencia de la semilla $2026$ también lo llevó, aunque se entrenó en A40
+(tabla~\ref{tab:regimen}). Cada ejecución guarda un identificador de configuración
+(\textit{hash}) que permite comprobar si el recorte estuvo activo.
+
+El recorte se usa en el segundo régimen porque los núcleos de espacio de estados de EEGMamba
+saturan el rango de \texttt{float16} y divergen sin él, y es una técnica descrita para los
+gradientes explosivos \cite{pascanu2013difficulty}; aplicarlo a las cuatro arquitecturas
+mantiene un único procedimiento de entrenamiento. No se comprobó que fuese neutro para
+\eegnet{}, el Conformer y LaBraM, y no se conserva registro numérico de la divergencia de
+EEGMamba sin recorte ni de la norma del gradiente, por lo que se desconoce en qué fracción de
+los pasos el recorte actúa. Las recetas de referencia de las cuatro arquitecturas no
+coinciden en usarlo: el repositorio de EEGMamba \cite{wang2025eegmamba} lo activa por defecto
+con valor $1$; el de LaBraM \cite{jiang2024labram} lo deja desactivado en el ajuste fino; y
+en los de \eegnet{} \cite{lawhern2018} y del Conformer \cite{song2023conformer} no aparece.
+Este trabajo no afirma que el recorte sea una práctica habitual en el decodificado de EEG.
+
+En \eegnet{}, el Conformer y LaBraM, el contraste entre una variante (segundo régimen) y la
+ejecución base de la semilla $2026$ mezcla el efecto de la variante con un cambio compuesto
+del régimen de entrenamiento: recorte de gradiente, hardware (A40 frente a L40S) y versión
+del código. En EEGMamba el recorte no cambia, aunque sí el hardware y el código. Ese cambio
+no puede aislarse en sus componentes, pero se acota su magnitud comparando, para cada sujeto,
+la semilla $2026$ de la base con la media de las semillas $2027$ y $2028$
+(sección~\ref{sec:cota-confusor}; resultados en la sección~\ref{sec:confusor}). No se detecta
+efecto del cambio de régimen en ninguna arquitectura: el límite del intervalo de confianza al
+$95$\,\% de la diferencia media por sujeto en exactitud es de $0.010$ a $0.020$ según la
+arquitectura, y en una media de tres semillas, de las cuales una se entrenó sin recorte, la
+contaminación máxima es de $0.003$ a $0.007$ (tabla~\ref{tab:confusor}). Eso descarta un
+efecto medio mayor que esos límites, no un efecto nulo. Para el protocolo intra-sujeto de
+\eegnet{} y del Conformer no existe base con recorte (las tres semillas se entrenaron sin él),
+de modo que ese efecto no es estimable y se declara en las limitaciones. Repetir esa base con
+recorte queda como trabajo pendiente.
+
+\textbf{Alcance de la unificación.} Las cuatro arquitecturas comparten la \emph{estructura}
+del procedimiento (optimizador, planificación de la tasa de aprendizaje, criterio de parada,
+aumentación, particiones y métricas) y no los valores numéricos, que enumera la
+tabla~\ref{tab:configs}.
+
+\begin{table}[H]
+\centering
+\caption{Configuración efectiva de cada arquitectura. Las dos primeras columnas son los
+valores con los que se ejecutaron los resultados reportados; la última resume por qué
+difieren del resto. La tabla no recoge el recorte de la norma del gradiente, que no es un
+valor por arquitectura sino un cambio de régimen entre ejecuciones (párrafo
+``Recorte de la norma del gradiente'' de esta sección).}
+\label{tab:configs}
+\small
+\begin{tabular}{lccp{7.2cm}}
+\toprule
+ & \textbf{Tasa de aprendizaje} & \textbf{Lote} & \textbf{Motivo de la desviación} \\
+\midrule
+\eegnet{}   & $2.8\times10^{-3}$ & $256$ & Empleada al pasar al lote $256$, sin búsqueda ni criterio de ajuste registrado; coincide con escalar $10^{-3}$ por la raíz cuadrada del aumento de lote, $10^{-3}\sqrt{8}$ \\
+Conformer   & $1.0\times10^{-3}$ & $256$ & Valor por defecto del esquema; no se comparó de forma sistemática con el de \eegnet{} \\
+LaBraM      & $1.0\times10^{-4}$ & $32$  & Parte de pesos preentrenados: en una prueba preliminar, con la tasa por defecto producía una salida constante para todas las entradas \\
+EEGMamba    & $1.0\times10^{-3}$ & $32$  & Cómputo en \texttt{bfloat16}: los núcleos de espacio de estados superan el rango numérico representable en \texttt{float16} y divergen (sección~\ref{sec:eegmamba-adapt}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los ajustes responden a problemas de entrenamiento observados en pruebas preliminares y no
+a la búsqueda de un mejor resultado para una arquitectura concreta; no se realizó una
+búsqueda sistemática de hiperparámetros. Sí hubo decisiones tomadas observando el conjunto
+principal: la cabeza de EEGMamba se eligió comparando su exactitud intra-sujeto sobre las
+mismas particiones que luego se reportan (sección~\ref{sec:eegmamba-adapt}) y se trasladó al
+protocolo \loso{}, lo que pudo favorecer ligeramente a esa arquitectura, y la tasa de LaBraM
+y la precisión \texttt{bfloat16} se fijaron tras pruebas preliminares sobre el mismo
+conjunto. La comparación debe leerse, por tanto, entre arquitecturas en una configuración
+funcional y no óptima. El tamaño de lote tampoco es constante ($256$ frente a $32$), lo que
+altera el número de actualizaciones del optimizador por época y no solo la velocidad de
+cómputo.
+
+Se tomaron como referencia los valores de los artículos originales o de sus implementaciones, con las excepciones documentadas en la tabla~\ref{tab:configs} y las adaptaciones descritas en esta sección, incluidas las tasas de \eegnet{} y EEGMamba y la cabeza de EEGMamba. La tasa de \eegnet{} carece de un criterio de selección registrado, como indica la tabla. El ajuste fino de pesos preentrenados solo se aplicó a LaBraM. Una sintonización específica por arquitectura podría alterar su orden; esta limitación se aborda en la sección~\ref{sec:limitaciones}.
+
+\textbf{Aumentación de datos.} Todos los entrenamientos, en las cuatro arquitecturas y
+en los dos protocolos, aplican tres transformaciones sobre el conjunto de entrenamiento,
+nunca sobre validación ni sobre prueba. Se aplican \emph{por minilote}, de modo que cada
+época ve realizaciones distintas:
+
+\begin{itemize}
+  \item \textbf{Desplazamiento temporal} de hasta el $5$\,\% de la ventana, es decir
+  $\pm 40$ muestras o $\pm 200$\,ms, sorteado de forma independiente por segmento.
+  \item \textbf{Ruido gaussiano} de desviación igual al $2$\,\% de la desviación típica
+  \emph{de cada canal}, calculada sobre el propio lote.
+  \item \textbf{Enmascarado en frecuencia} de una banda aleatoria de hasta $2$\,Hz,
+  aplicada sobre la transformada de Fourier y deshecha con la transformada inversa.
+\end{itemize}
+
+La mezcla de segmentos (\textit{mixup}) está implementada pero desactivada. La
+aumentación es idéntica en las cuatro arquitecturas y es la línea base frente a la que se
+contrastan las variantes de aumentación. Es \textbf{en línea}: el conjunto de entrenamiento
+conserva su tamaño (por ejemplo, los $18\,360$ segmentos de cada \textit{fold} \loso{}) y
+solo varía entre épocas la perturbación con que cada segmento se presenta a la red, de modo
+que actúa como regularización y no amplía el número de ejemplos. Solo una de las tres
+transformaciones añade ruido; el desplazamiento temporal es geométrico y el enmascarado en
+frecuencia suprime una banda.
+
+La arquitectura de referencia es \eegnet{} \cite{lawhern2018}, el punto de comparación
+habitual en la literatura de imaginación motora.
+
+\subsection{Adaptaciones específicas de EEGMamba}
+\label{sec:eegmamba-adapt}
+
+A diferencia de LaBraM, EEGMamba se entrenó desde cero, sin pesos preentrenados.
+Por ello se aparta del esquema unificado en tres puntos, todos necesarios para que
+el modelo aprenda y ninguno orientado a favorecerlo frente al resto de
+arquitecturas:
+
+\begin{itemize}
+  \item \textbf{Precisión de cómputo.} Los núcleos de espacio de estados del
+  bloque Mamba (recorrido selectivo y exponenciales) superan el rango numérico
+  representable en media precisión \texttt{float16} y producen valores no numéricos pasadas las primeras
+  épocas. Se sustituye \texttt{float16} por \texttt{bfloat16}, que conserva el
+  rango de exponente de la precisión simple y elimina el desbordamiento sin
+  penalización de velocidad apreciable.
+  \item \textbf{Recorte de gradiente.} La norma del gradiente se acota a $1.0$
+  \cite{pascanu2013difficulty}. En las ejecuciones base del primer régimen es una
+  adaptación propia de esta arquitectura; en el segundo régimen lo llevan las cuatro. Su
+  justificación y su consecuencia para la comparación se tratan en el párrafo ``Recorte de
+  la norma del gradiente'' de la subsección anterior.
+  \item \textbf{Cabeza de clasificación.} Se emplea en \textbf{ambos protocolos} la
+  cabeza que conserva la representación de todos los canales y parches y la proyecta
+  linealmente, porque es la que preserva la lateralización sensoriomotora, el contraste
+  que separa la imaginación motora de una mano y de la otra. La alternativa considerada,
+  un promediado global sobre canales y parches, elimina la información de lateralización antes de la
+  proyección, y con ella la exactitud intra-sujeto queda en $0.519$, apenas por encima
+  del azar (Wilcoxon de una muestra frente a $0.50$, $p = 0.017$). Conservando la
+  representación por canal asciende a $0.577$ con la semilla 2026 ($p = 1.5\times10^{-8}$ frente al azar) y
+  supera a la variante de promediado con tamaño de efecto grande
+  ($p = 2.6\times10^{-6}$, $r = 0.64$; contraste de Wilcoxon pareado sobre los 54
+  sujetos).
+
+  Esta cabeza sobreajusta en el protocolo intra-sujeto. Con 62 canales la proyección
+  recibe $62 \times 4 \times 200 = 49\,600$ características frente a los 144 segmentos de
+  entrenamiento de cada partición, y los registros por época muestran que la pérdida de
+  validación aumenta desde las primeras épocas mientras la de entrenamiento disminuye.
+  La consecuencia es que, en el $85.6$\,\% de las ejecuciones intra-sujeto, el criterio de
+  parada conserva un modelo de las épocas de calentamiento
+  (sección~\ref{sec:seleccion-intra}). La exactitud de $0.577$ debe leerse, por tanto,
+  como el resultado conjunto de la arquitectura y del procedimiento de selección del
+  modelo con 36 ensayos de validación, y no como una medida de capacidad comparable con
+  la de las otras tres arquitecturas.
+\end{itemize}
+
+La tasa de aprendizaje se fija en $10^{-3}$, superior a la empleada al ajustar el
+modelo preentrenado, coherente con un entrenamiento desde cero.
+
+\subsection{Semillas y régimen de optimización de cada una}
+\label{sec:semillas-metodo}\label{sec:fase3-variantes}
+
+Las cuatro arquitecturas se ejecutaron con tres semillas, $2026$, $2027$ y $2028$, en el
+protocolo intra-sujeto y en \loso{}, y las tres semillas se repitieron también en el modelo
+de $54$ sujetos transferido a WBCIC-SHU, en el modelo nativo de WBCIC-SHU y en el protocolo
+de sujetos apartados (44 más 10). Eso significa, por protocolo:
+
+\begin{itemize}
+  \item \textbf{Intra-sujeto.} \eegnet{} y el Conformer ya contaban con las tres semillas;
+  para LaBraM y EEGMamba se añadieron la $2027$ y la $2028$. Cada arquitectura aporta
+  $54 \times 20 \times 3 = 3\,240$ mediciones.
+  \item \textbf{\loso{}.} La semilla $2026$ procede de las ejecuciones del primer régimen, y se
+  añadieron la $2027$ y la $2028$ para las cuatro arquitecturas: $54 \times 3 = 162$
+  \textit{folds} por arquitectura.
+  \item \textbf{Transferencia y sujetos apartados.} Se añadieron las semillas $2027$ y
+  $2028$ a las tres configuraciones que antes tenían la $2026$.
+\end{itemize}
+
+El número de semillas se limita a tres por el presupuesto de cómputo. Se reportan todas; no
+se elige la de mejor desempeño, porque seleccionarla sobre el propio conjunto de prueba
+sería un sesgo de selección. Las variantes de preprocesamiento y de aumentación
+(secciones~\ref{sec:variantes-preproc} y~\ref{sec:variantes-aug}) usan solo la semilla
+$2026$, para cubrir más variantes con una semilla cada una; por ello el desplazamiento medio
+entre semillas no se incorpora en esos contrastes (sección~\ref{sec:ablaciones-f4}).
+
+Las semillas controlan la inicialización de la red y los sorteos del entrenamiento. Se
+emparejan por índice entre arquitecturas, aunque las inicializaciones son independientes, de
+modo que el emparejamiento solo etiqueta. La semilla del remuestreo estadístico es otra
+(sección~\ref{sec:bootstrap}).
+
+
+
+\begin{table}[H]
+\centering
+\caption{Régimen de recorte de gradiente por semilla (orden $2026$, $2027$, $2028$).
+S: sin recorte. C: con recorte a $1.0$. En las semillas $2026$ de las cuatro arquitecturas,
+las ejecuciones son del primer régimen (GPU A40); las demás, del segundo (GPU
+L40S), salvo las semillas $2027$ y $2028$ intra-sujeto de \eegnet{} y del Conformer, que
+también se entrenaron en A40. La transferencia de la semilla $2026$, aunque anterior al segundo régimen y
+en A40, ya llevaba recorte.}
+\label{tab:regimen}
+\small
+\begin{tabular}{lcccc}
+\toprule
+ & \textbf{\eegnet{}} & \textbf{Conformer} & \textbf{LaBraM} & \textbf{EEGMamba} \\
+\midrule
+\loso{}                          & S C C & S C C & S C C & C C C \\
+Intra-sujeto                     & S S S & S S S & S C C & C C C \\
+Transferencia y 44 + 10          & C C C & C C C & C C C & C C C \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La tabla muestra qué comparaciones cruzan regímenes: las de \eegnet{}, el Conformer y
+LaBraM entre la semilla $2026$ y las otras dos en \loso{}, y las de LaBraM en
+intra-sujeto. Entre las semillas de una misma fila sin cambio de letra no hay cambio de
+recorte, aunque sí puede haber cambio de hardware.
+
+
+
+\subsection{Variantes de aumentación de datos}
+\label{sec:variantes-aug}
+
+La configuración base aplica las tres transformaciones descritas en la
+sección~\ref{sec:fase3} (desplazamiento temporal, ruido gaussiano y enmascarado en
+frecuencia). Se evalúan tres cambios, todos sobre el conjunto de entrenamiento y por
+minilote, como la base:
+
+\begin{itemize}
+  \item \textbf{Sin aumentación.} Las tres transformaciones de la base en cero. Esta
+  condición no es la base: es la ausencia de toda aumentación.
+  \item \textbf{Reflexión de canales} \cite{wang2024channelreflection}. La base más una
+  reflexión que, con probabilidad $0.5$ por segmento, intercambia cada canal con su simétrico
+  del otro hemisferio y permuta la etiqueta (mano izquierda por mano derecha), porque la
+  desincronización de la imaginación motora es contralateral. El simétrico de un canal impar
+  $n$ es el par $n+1$, según el sistema 10-20 y sus extensiones; los canales de la línea media
+  y los que no tienen pareja en el montaje se quedan en su sitio. Se aplica antes que el
+  resto de transformaciones del lote.
+  \item \textbf{Ruido en la amplitud de Fourier.} La base más una perturbación
+  multiplicativa gaussiana del módulo de cada componente de la transformada de Fourier,
+  $|F'(f)| = |F(f)|\,\max\!\bigl(0,\ 1 + \sigma\,\mathcal{N}(0,1)\bigr)$ con $\sigma = 0.1$,
+  independiente por canal, segmento y componente, con la fase conservada, y se vuelve al
+  tiempo con la transformada inversa. No se dispuso de un valor de referencia en la
+  literatura para esta aplicación; $\sigma = 0.1$ es una elección propia, fijada antes de
+  ejecutar y sin ajuste posterior, por lo que el resultado vale para esa amplitud y no para
+  el ruido en Fourier en general.
+\end{itemize}
+
+En el protocolo intra-sujeto se ejecutan las tres con la semilla $2026$; en \loso{}, solo la
+reflexión de canales, con la semilla $2026$. El ruido en Fourier en \loso{} no se ejecutó.
+
+\subsection{Variantes con una sola semilla y ablaciones recortadas en LaBraM y EEGMamba}
+\label{sec:ablaciones-recortadas}
+
+LaBraM y EEGMamba cuestan varias horas cada ablación intra-sujeto, porque
+saturan la GPU y la paralelización por trabajadores apenas las acelera. Por coste de
+cómputo se decidió, antes de ejecutarlas, limitar sus ablaciones a la reflexión de canales,
+el ruido en Fourier y la ventana de \seg{0} a \seg{2}, esta última porque cambia el número
+de parches. \eegnet{} y el Conformer recorren las ocho: tres subbandas, dos ventanas, sin
+aumentación, reflexión de canales y ruido en Fourier. Por tanto los efectos de subbanda,
+de la ventana de \seg{3} y de la ausencia de aumentación no se evalúan en LaBraM ni en
+EEGMamba.
+
+

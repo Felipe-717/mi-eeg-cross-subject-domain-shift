@@ -603,6 +603,7 @@ def main() -> int:
     ap.add_argument("--verboso", action="store_true", help="listar tambien las que coinciden")
     ap.add_argument("--avance7", action="store_true",
                     help="ejecutar ademas las cifras del avance 7 (verificar_cifras_avance7.py)")
+    ap.add_argument("--informe-final", action="store_true", help="verificar cifras nuevas del informe final")
     args = ap.parse_args()
 
     fallos, faltan = [], []
@@ -635,6 +636,9 @@ def main() -> int:
         print()
         print("--- avance 7 ---")
         codigo = max(codigo, v7.ejecutar(args.verboso))
+    if args.informe_final:
+        import verificar_cifras_informe_final as vf
+        codigo = max(codigo, vf.ejecutar(args.verboso))
     return codigo
 
 

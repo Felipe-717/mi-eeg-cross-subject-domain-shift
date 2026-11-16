@@ -1,0 +1,68 @@
+\subsection{Indicador propuesto}
+\label{sec:dsi-resultados}
+
+El indicador \dsi{} de la ecuación~\eqref{eq:dsi} es positivo en las cuatro arquitecturas, entre
+$+0.026$ y $+0.052$ (entre el $2.6$ y el $5.2$\,\% en términos relativos), y solo en LaBraM
+alcanza significación tras la corrección de Holm ($p_{\text{Holm}} = 0.033$, tabla~\ref{tab:dsi}).
+Las columnas de vistos y no vistos proceden de un mismo conjunto de pesos por \textit{fold}, por lo
+que la diferencia queda libre del confundidor de volumen de datos de la
+ecuación~\eqref{eq:dsi-clasico}.
+
+\begin{table}[H]
+\centering
+\caption{Indicador \dsi{} de las cuatro arquitecturas sobre los $54$ \textit{folds}
+\loso{}. Panel superior: media de las tres semillas por \textit{fold}; panel inferior: semilla
+2026 sola. La columna $p$ corresponde al contraste de Wilcoxon
+pareado entre participantes vistos y no vistos; $p_{\text{Holm}}$ es su valor corregido por los
+cuatro contrastes de cada panel, y $r$ el tamaño de efecto del mismo contraste. En negrita, la
+única arquitectura para la que se declara degradación.}
+\label{tab:dsi}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccccc}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Exactitud}} & & & & & \\
+\cmidrule(lr){2-3}
+ & Vistos & No vistos & \dsi{} & \dsi{} kappa & \textit{Folds} $>0$ & $p$ \;/\; $p_{\text{Holm}}$ & $r$ \\
+\midrule
+\multicolumn{8}{l}{\textit{Media de tres semillas por \textit{fold} (2026, 2027 y 2028)}} \\
+\eegnet{} & 0.781 & 0.761 & $+0.026$ & $+0.071$ & 30/54 & 0.25 \;/\; 0.25 & 0.16 \\
+Conformer & 0.775 & 0.747 & $+0.037$ & $+0.103$ & 34/54 & 0.099 \;/\; 0.20 & 0.22 \\
+\textbf{LaBraM} & \textbf{0.796} & \textbf{0.755} & \textbf{$+0.052$} & \textbf{$+0.140$} & \textbf{37/54} & \textbf{0.008 \;/\; 0.033} & \textbf{0.36} \\
+EEGMamba & 0.742 & 0.715 & $+0.036$ & $+0.110$ & 37/54 & 0.027 \;/\; 0.082 & 0.30 \\
+\midrule
+\multicolumn{8}{l}{\textit{Semilla 2026 sola}} \\
+\eegnet{} & 0.783 & 0.763 & $+0.026$ & $+0.071$ & 33/54 & 0.23 \;/\; 0.23 & 0.16 \\
+Conformer & 0.786 & 0.752 & $+0.044$ & $+0.121$ & 34/54 & 0.053 \;/\; 0.11 & 0.26 \\
+\textbf{LaBraM} & \textbf{0.798} & \textbf{0.754} & \textbf{$+0.055$} & \textbf{$+0.148$} & \textbf{38/54} & \textbf{0.006 \;/\; 0.026} & \textbf{0.37} \\
+EEGMamba & 0.742 & 0.717 & $+0.034$ & $+0.105$ & 37/54 & 0.038 \;/\; 0.11 & 0.28 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Sin la corrección de Holm, que se fijó tras conocer los valores de la semilla 2026
+(sección~\ref{sec:estadistica}), también EEGMamba ($p = 0.027$) cumpliría el criterio. La magnitud
+del indicador es muy inferior a la degradación que el
+sección~\ref{cap:validacion-externa} atribuye al cambio de protocolo de adquisición. Sus
+intervalos se solapan (subsección~\ref{sec:bootstrap-resultados}), de modo que de estos valores no se
+extrae una relación con el número de parámetros, el preentrenamiento o el mecanismo de procesamiento;
+los datos tampoco permiten descartar diferencias de tamaño moderado, porque las cuatro arquitecturas
+difieren a la vez en esos factores. LaBraM, el único modelo preentrenado, presenta el indicador más
+alto. La declaración para LaBraM se sostiene con la semilla 2026 y con la media de tres semillas, y no
+con cada una de las otras dos por separado ($p_{\text{Holm}} = 0.074$ y $0.052$). Este resultado es
+el primer eje del criterio de la sección~\ref{sec:criterio-robustez} y se retoma en la
+sección~\ref{sec:aplicacion-robustez}.
+
+\subsubsection{Restricción de interpretación}
+
+El indicador \textbf{solo admite interpretación agregada}, y no se reporta por sujeto. En kappa, con
+\eegnet{} y la media de tres semillas, el conjunto de sujetos vistos promedia $51$ personas y es casi
+constante entre \textit{folds} (desviación $0.029$), mientras que el no visto es un solo sujeto
+(desviación $0.237$); el \dsi{} de un \textit{fold} es casi una transformación lineal del desempeño
+del sujeto de prueba ($r = -0.993$), una consecuencia aritmética de la construcción y no un hallazgo.
+Se considera sujeto de bajo rendimiento (\textit{BCI illiteracy}) al que no supera el $70$\,\% de
+exactitud \cite{kubler2004,vidaurre2010}; el fenómeno afecta al $15$ a $30$\,\% de los usuarios
+\cite{vidaurre2010,blankertz2010} y a una tasa del $53.7$\,\% en \openbmi{} con CSP
+\cite{lee2019}. La dificultad del sujeto se trata como un problema de separabilidad de la señal y
+no de ausencia de ella \cite{huang2023discrepancy}.
+

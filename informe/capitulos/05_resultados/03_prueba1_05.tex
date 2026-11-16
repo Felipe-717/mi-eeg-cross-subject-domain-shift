@@ -1,0 +1,26 @@
+\subsection{Distribución entre sujetos}
+
+La exactitud \loso{} de \eegnet{} varía de $0.543$ a $0.989$ entre sujetos, con $20$ por encima de
+$0.80$ y $6$ por debajo de $0.60$ (tabla~\ref{tab:distribucion}).
+
+\begin{table}[H]
+\centering
+\caption{Distribución de la exactitud \loso{} de \eegnet{} entre los 54 sujetos, con la media de tres semillas por sujeto (igual que la correlación).}
+\label{tab:distribucion}
+\begin{tabular}{p{7.5cm}c}
+\toprule
+Cuartiles (Q1 / mediana / Q3) & 0.667 / 0.764 / 0.832 \\
+Rango & entre 0.543 (sub-24) y 0.989 (sub-33) \\
+Sujetos con exactitud $< 0.60$ & 6 \\
+Sujetos con exactitud $> 0.80$ & 20 \\
+Correlación de Pearson intra-sujeto frente a \loso{} & 0.36 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los dos protocolos ordenan a los participantes solo en parte: la correlación entre ellos es de
+$0.36$ en \eegnet{} y varía de $0.31$ a $0.68$ entre arquitecturas, con el valor más alto en LaBraM y
+un intervalo al $95$\,\% del Conformer que incluye el cero ($-0.03$ a $0.59$). Es compatible con que la
+facilidad de decodificación dependa del régimen de entrenamiento y con el ruido del protocolo
+intra-sujeto (subsección~\ref{sec:seleccion-intra}); los datos no permiten atribuirla a la persona.
+

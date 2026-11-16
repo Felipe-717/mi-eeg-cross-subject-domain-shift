@@ -1,0 +1,26 @@
+\chapter{Contenido del repositorio}
+\label{anx:repositorio}
+
+El repositorio público descrito en \cite{ayala2026repo} contiene el código y los resultados que sustentan las cifras de este documento. Los datos de \openbmi{} y WBCIC-SHU no se redistribuyen; se obtienen de sus fuentes
+originales o de las cachés preprocesadas publicadas en Hugging Face, como indica el archivo
+\texttt{README.md}. La Tabla~\ref{tab:repositorio} resume la estructura.
+
+\begin{table}[htbp]
+\centering
+\caption{Estructura del repositorio.}
+\label{tab:repositorio}
+\begin{tabular}{p{0.28\textwidth}p{0.62\textwidth}}
+\hline
+Carpeta & Contenido \\
+\hline
+\texttt{src/} & Modelos, adaptadores de entrada, entrenamiento, particiones y aumentación \\
+\texttt{scripts/} & Preparación de los conjuntos de datos, entrenamiento, análisis estadístico y verificación de cifras \\
+\texttt{pod/} & Scripts de ejecución en GPU remota \\
+\texttt{tests/} & Pruebas de particiones y de ausencia de fuga entre entrenamiento y evaluación \\
+\texttt{results/} & Exactitudes por sujeto, \textit{fold} y semilla, y tablas derivadas \\
+\texttt{informe/} & Fuente \LaTeX{} de este documento \\
+\hline
+\end{tabular}
+\end{table}
+
+Las cifras del documento se comprueban mediante el script de verificación del repositorio.

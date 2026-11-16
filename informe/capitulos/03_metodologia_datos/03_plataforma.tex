@@ -1,0 +1,36 @@
+\section{Plataforma de cómputo}
+\textbf{Régimen de optimización de cada semilla.} La tabla~\ref{tab:regimen} resume el
+régimen de recorte de cada semilla, comprobado con el identificador de configuración de cada
+ejecución, y la tabla~\ref{tab:hardware} el hardware en que se entrenó cada parte.
+
+\begin{table}[H]
+\centering
+\caption{Hardware de entrenamiento. En la unidad de procesamiento gráfico (GPU) A40, la memoria, la capacidad de cómputo y los programas corresponden a los registros de ejecución; para la L40S y la arquitectura de ambas GPU, se tomaron los datos de catálogo y de la imagen del contenedor. No se interpreta ninguna diferencia entre ejecuciones como efecto del hardware, y los tiempos por \textit{fold} no son comparables entre las dos GPU.}
+\label{tab:hardware}
+\small
+\begin{tabular}{@{}p{3.6cm}p{5.2cm}p{5.2cm}@{}}
+\toprule
+ & \textbf{NVIDIA A40} & \textbf{NVIDIA L40S} \\
+\midrule
+Arquitectura (capacidad de cómputo) & Ampere (sm\_86) & Ada Lovelace (sm\_89) \\
+Memoria de la GPU                   & $48$\,GB ($47.7$\,GB útiles) & $48$\,GB \\
+Régimen de entrenamiento            & Primero & Segundo \\
+Qué se entrenó                      & Ejecuciones base de la semilla $2026$ de las cuatro arquitecturas (intra-sujeto y \loso{}), semillas $2027$ y $2028$ intra-sujeto de \eegnet{} y del Conformer, y transferencia de la semilla $2026$ & Las demás semillas y todas las variantes (ablaciones, aumentación, alineamiento, calibración) \\
+Programas                           & PyTorch $2.8.0$, CUDA $12.8$ & PyTorch $2.8.0$, CUDA $12.8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+En RunPod se utilizaron las unidades de procesamiento gráfico (GPU) A40 y L40S de la tabla~\ref{tab:hardware}. La
+semilla base 2026 se entrenó en A40 sin recorte de gradiente, salvo EEGMamba;
+\eegnet{} y Conformer intra-sujeto usaron las tres semillas en A40 sin recorte.
+LaBraM y EEGMamba intra-sujeto con semillas 2027 y 2028 y todos los protocolos
+\loso{} con esas semillas se ejecutaron en L40S con recorte de norma 1.0. El
+entorno local dispuso de una NVIDIA RTX 3050 de 4 GB para análisis y pruebas locales.
+
+El entorno local incluyó Python 3.11, PyTorch 2.5.1 con CUDA 12.1, MNE 1.12.1,
+\texttt{braindecode} 1.6.1, SciPy 1.17.1, NumPy 2.4.6 y \texttt{mne-icalabel}
+0.9.0; en RunPod se emplearon PyTorch 2.8.0 y CUDA 12.8. El análisis bayesiano
+empleó \texttt{baycomp} 1.0.3. Las semillas 2026, 2027 y 2028, las particiones
+de los protocolos y el código y resultados disponibles en el repositorio
+\cite{ayala2026repo} permiten reproducir las ejecuciones bajo sus respectivos regímenes.

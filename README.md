@@ -67,9 +67,14 @@ From the repository root:
 ```bash
 python scripts/verificar_cifras.py
 python scripts/verificar_cifras.py --avance7
+python scripts/verificar_cifras.py --informe-final
 ```
 
-The expected counts are 195 and 3608 verified figures, respectively.
+The expected counts are 195, 3608 and 371 verified figures, respectively. The last option checks the figures added in the final report (Bayesian signed-rank test with ROPE, equivalence tests on degradation, computational cost, seed stability, robustness to perturbations and saliency lateralization) against `results/informe_final/` and against the LaTeX sources.
+
+## Final report analyses
+
+`scripts/informe_*.py` produce the analyses added in the final report; their outputs are in `results/informe_final/`. `scripts/laboratorio.py` runs the remaining experiments (FIR sub-bands, held-out subjects in five partitions, mu+beta for LaBraM and EEGMamba) with `--comprobar`, `--plan`, `--humo` and resume support; the step-by-step guide, in Spanish, is `docs/GUIA_LABORATORIO.md`.
 
 ## RunPod
 

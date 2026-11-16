@@ -5,9 +5,11 @@ dependencies:
   - python=3.11
   - pip
   - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
       - torch==2.5.1+cu121
       - mne==1.12.1
-      - braindecode==1.6.1
+      - braindecode[hub]==1.6.1
+      - baycomp==1.0.3
       - scipy==1.17.1
       - numpy==2.4.6
       - pandas==3.0.3
@@ -21,4 +23,5 @@ dependencies:
       - pytest==9.1.1
       - PyYAML==6.0.3
 # Pod runs used PyTorch 2.8.0 and CUDA 12.8.
-# The exported local environment has PyTorch 2.5.1+cu121; safetensors and mamba-ssm were not installed.
+# braindecode[hub] adds huggingface_hub and safetensors, required to load the pretrained LaBraM weights.
+# EEGMamba additionally requires mamba-ssm and causal-conv1d (Linux with CUDA only).

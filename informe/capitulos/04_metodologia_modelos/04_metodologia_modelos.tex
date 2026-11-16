@@ -1,0 +1,12 @@
+\chapter{Metodología II: arquitecturas, entrenamiento y evaluación}
+\label{cap:metodologia-modelos}
+\section{Introducción}
+Se describieron las arquitecturas y sus representaciones de entrada, que determinaron los modelos comparados; el esquema de entrenamiento fijó sus configuraciones y pesos. Los protocolos de evaluación produjeron exactitudes por sujeto en escenarios intra-sujeto, inter-sujeto mediante dejar un sujeto fuera (Leave-One-Subject-Out, \loso{}) y de transferencia. Los indicadores y el análisis estadístico definieron las medidas de degradación y comparación; los criterios adicionales establecieron medidas de costo, estabilidad, robustez, interpretabilidad y eficiencia de datos para complementar la evaluación.
+\input{capitulos/04_metodologia_modelos/03_arquitecturas}
+\input{capitulos/04_metodologia_modelos/04_evaluacion}
+\section{Conclusiones}
+Se compararon cuatro arquitecturas con $62$ canales: \eegnet{} con $2\,898$ parámetros, Conformer con $710\,146$, LaBraM Base con $5\,818\,138$ y EEGMamba con $3\,376\,445$. Solo LaBraM partió de pesos preentrenados.
+
+En \loso{}, cada arquitectura aportó $54$ particiones por semilla y $162$ en total con tres semillas. La equivalencia práctica se examinó con margen $\pm 0.03$ y la prueba bayesiana incluyó márgenes de sensibilidad de $0.01$ y $0.02$.
+
+La evaluación adicional combinó costo, estabilidad entre semillas, perturbaciones, interpretabilidad y calibración; los análisis de perturbaciones e interpretabilidad quedaron limitados a una semilla y diez sujetos apartados.

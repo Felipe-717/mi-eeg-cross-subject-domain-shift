@@ -172,6 +172,12 @@ def derivar_cache(origen, destino, tipo, ventana=(0.0, 4.0), canales=None,
             lo, hi = banda
             X = filtro_banda(X.astype(np.float32), sfreq, lo, hi)
             info.update(banda=[lo, hi], orden=4, filtro="butter_sosfiltfilt")
+        elif tipo == "banda_fir":
+            from mne.filter import filter_data
+            lo, hi = banda
+            X = filter_data(X.astype(np.float64), sfreq, lo, hi, method="fir",
+                            phase="zero", fir_design="firwin", verbose=False).astype(np.float32)
+            info.update(banda=[lo, hi], filtro="firwin_zero")
         else:
             raise ValueError(tipo)
         datos["X"] = X

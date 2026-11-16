@@ -1,0 +1,76 @@
+\chapter{Introducción}
+\label{cap:introduccion}
+Las interfaces cerebro-computador permiten traducir señales cerebrales en comandos de comunicación o control. Entre sus paradigmas, la imaginación motora utiliza cambios de actividad asociados con la representación de un movimiento, sin exigir su ejecución. La generalización a personas no incluidas en el entrenamiento es una condición relevante para extender su uso a múltiples usuarios.
+
+\section{Contextualización}
+La electroencefalografía (EEG) superficial permite registrar actividad relacionada con la imaginación motora, pero sus señales varían entre personas y sesiones. Las diferencias fisiológicas y de adquisición pueden alterar la distribución de entrada y reducir el desempeño de una interfaz cerebro-computador (BCI) ante un usuario nuevo. La necesidad de recalibración limita la escalabilidad de estos sistemas \cite{li2026survey,huang2023discrepancy}.
+
+Los antecedentes incluyen evaluaciones individuales y estudios independientes del sujeto; sus cifras no son directamente comparables cuando cambian datos, clases y particiones. Por ejemplo, el anteproyecto informó para transferencia de estilo en validación dejando un sujeto fuera (\loso{}) exactitudes de 67.92\,\% en BCI IV-2a y 72.40\,\% en CBCIC \cite{han2026source}; esas cifras requieren cotejo con la fuente original, como se indica en el capítulo 2. La comparación de familias bajo datos y evaluación comunes aporta evidencia para seleccionar modelos y reconocer límites de generalización, sin suponer que los resultados se trasladan a cualquier población o dispositivo.
+\section{Planteamiento del problema y objetivos}
+La variabilidad entre usuarios y la no estacionariedad del EEG dificultan aplicar a un nuevo participante un clasificador entrenado con otras personas. Aunque existen arquitecturas convolucionales, de atención, de espacio de estados y modelos preentrenados, las diferencias entre estudios en selección de datos, procesamiento y validación dificultan atribuir sus resultados a la arquitectura. Además, contrastar directamente un modelo individual con uno multiusuario confunde el cambio de persona con el volumen de entrenamiento. Se requiere una evaluación compartida que examine tanto el desempeño como la degradación y sus condiciones. La pregunta del anteproyecto fue: ¿Cómo determinar el tipo de arquitectura de máquinas de aprendizaje profundo que ofrece mejor desempeño frente al cambio de dominio en sistemas BCI multiusuario basados en imaginación motora?
+
+Los objetivos del trabajo son los siguientes; su instanciación experimental y sus diferencias respecto del anteproyecto se examinan en el capítulo~\ref{cap:conclusiones}.
+
+
+\subsection*{Objetivo general}
+
+Evaluar el desempeño de generalización de máquinas de aprendizaje profundo
+frente al fenómeno de cambio de dominio en sistemas BCI multiusuario de
+imaginación motora, mediante un protocolo de validación inter-sujeto que
+permita la identificación de la arquitectura con mayor robustez.
+
+\subsection*{Objetivos específicos}
+
+\begin{enumerate}
+  \item Seleccionar un conjunto de datos multisujeto de señales sEEG\footnote{En este
+        documento, sEEG designa el electroencefalograma de superficie, registrado sobre el
+        cuero cabelludo, y no la estereoelectroencefalografía invasiva.} asociadas
+        a tareas de imaginación motora, que cuente con la representación y
+        diversidad inter-sujeto necesarias para el entrenamiento y evaluación
+        de las máquinas de aprendizaje profundo.
+        \label{oe:1}
+
+  \item Aplicar un flujo de preprocesamiento en las señales sEEG para la
+        eliminación de ruido y artefactos, selección de canales espaciales,
+        obtención de bandas de frecuencia y transformación a representaciones
+        de entrada compatibles con las arquitecturas seleccionadas.
+        \label{oe:2}
+
+  \item Implementar y configurar las arquitecturas Conformers, Mamba y
+        \textit{Foundation Models} para la decodificación de imaginación
+        motora.
+        \label{oe:3}
+
+  \item Evaluar comparativamente el desempeño de generalización de las
+        arquitecturas implementadas mediante un protocolo de validación
+        inter-sujeto y un indicador de degradación por cambio de dominio.
+        \label{oe:4}
+\end{enumerate}
+
+\section{Descripción del trabajo}
+Se seleccionaron datos públicos de imaginación motora de manos izquierda y derecha: OpenBMI, con 54 participantes, para la evaluación principal, y WBCIC-SHU para validación externa con 45 canales comunes. No se desarrolló hardware propio. El procesamiento comprendió filtrado, reducción de artefactos, segmentación y normalización; las representaciones se adaptaron a cada red. Se utilizaron recursos de cómputo locales y GPU en la nube. EEGNet se empleó como referencia, Conformer y EEGMamba se entrenaron desde cero y LaBraM Base se ajustó completamente a partir de pesos preentrenados.
+
+Se evaluaron particiones intra-sujeto por sesión y \loso{} en OpenBMI, con semillas 2026, 2027 y 2028, además de transferencia externa y criterios de estabilidad, costo y robustez. En \loso{}, las exactitudes medias sobre los 54 sujetos y tres semillas fueron 0.761 para EEGNet, 0.747 para Conformer, 0.755 para LaBraM y 0.715 para EEGMamba. Las semillas no compartieron completamente el régimen de optimización. El menor indicador de degradación entre personas correspondió a EEGNet y el menor indicador de cambio de protocolo a EEGMamba. La regla de decisión, fijada después del primer análisis, prefirió EEGNet por su menor costo medido entre las tres arquitecturas equivalentes en exactitud \loso{} y degradación; la preferencia se limita a las semillas y regímenes evaluados en el conjunto principal y no establece superioridad en todos los ejes (capítulo 5).
+
+\section{Organización de los capítulos}
+El capítulo 2 presenta los antecedentes y fundamentos de EEG, imaginación motora, cambio de dominio y arquitecturas que justifican la comparación.
+
+El capítulo 3 describe la selección de datos, el preprocesamiento y la plataforma que producen las entradas experimentales.
+
+El capítulo 4 define las arquitecturas, particiones, indicadores y procedimientos estadísticos aplicados a esas entradas.
+
+El capítulo 5 presenta las pruebas, resultados y análisis, incluida la validación externa y los criterios adicionales de comparación.
+
+El capítulo 6 confronta los objetivos y la pregunta de investigación con la evidencia y precisa las diferencias frente al anteproyecto.
+
+El capítulo 7 propone trabajos futuros derivados de las limitaciones observadas. Los anexos complementan el informe con información de apoyo y reproducibilidad.
+
+\section{Contribuciones y producción académica}
+\begin{enumerate}
+\item Comparación de cuatro arquitecturas con particiones \loso{} comunes en OpenBMI y tres semillas, con distinción de los regímenes de entrenamiento (capítulos 4 y 5).
+\item Indicador de degradación entre personas basado en los mismos pesos para evitar confundir ese cambio con el volumen de entrenamiento (capítulo 4).
+\item Análisis separado del cambio de persona y del cambio de conjunto y protocolo mediante validación externa (capítulos 4 y 5).
+\item Evaluación de robustez mediante varios criterios y una regla de decisión que prefirió EEGNet entre las arquitecturas equivalentes en exactitud \loso{} y degradación, por su menor costo medido, bajo las semillas y regímenes evaluados en un único conjunto principal; esta preferencia no implica superioridad en todos los ejes ni generalización universal (capítulos 4 y 5).
+\item Código y resultados para reproducir los experimentos en un repositorio público \cite{ayala2026repo}, junto con cachés públicas de OpenBMI y WBCIC-SHU en Hugging Face (capítulos 3 y 5).
+\end{enumerate}
+No se registran artículos ni ponencias derivados de este trabajo.

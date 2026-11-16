@@ -1,0 +1,97 @@
+\section{Antecedentes}
+Se realizó una revisión semisistemática a partir de los antecedentes del anteproyecto y de las referencias del informe. El anteproyecto declaró consultas en los repositorios de la Universidad del Valle y la Universidad Nacional de Colombia, ScienceDirect y Scopus, principalmente para publicaciones de 2021 a 2026. La selección aquí presentada conserva las fuentes disponibles y no supone una búsqueda adicional.
+% PENDIENTE-FELIPE: cadena de búsqueda, criterios de inclusión y exclusión y conteo por fase (identificados, cribados, incluidos).
+
+\subsection{Antecedentes nacionales}
+En \cite{camargo2023prototype} se examinó un prototipo de rehabilitación de miembro superior con seis participantes sanos. Tras filtrado de respuesta finita al impulso se aplicaron patrones espaciales comunes (CSP) y análisis discriminante lineal (LDA) para controlar un entorno virtual. Se informó viabilidad operativa; la muestra pequeña limita la evaluación entre sujetos.
+% VERIFICAR-FUENTE: sujetos, procesamiento y resultado en camargo2023prototype.
+
+El anteproyecto describió una tesis de la Universidad del Valle sobre intención motora en controles y pacientes con lesión medular. Se utilizaron representaciones canal-tiempo, canal-frecuencia y de covarianza con soporte tensorial multiclase, en un esquema individual. La fuente disponible no aporta una métrica exacta \cite{ferrin2023tesis}, y el protocolo no establece generalización multiusuario.
+% VERIFICAR: datos, protocolo y desempeño en Ferrín Bolaños 2023.
+
+En \cite{milanes2021shallow} se emplearon representaciones espectrales bidimensionales y una red convolucional poco profunda para imaginación motora en BCI Competition IV-2a y IV-2b. El anteproyecto informó mejoras frente a métodos anteriores; la heterogeneidad de clases y protocolos limita la comparación directa.
+% VERIFICAR-FUENTE: conjuntos, protocolo y desempeño en milanes2021shallow.
+
+En \cite{gomez2023estrategia} se estudiaron señales de conjuntos públicos y propios mediante mapas topográficos y conectividad funcional, con redes convolucionales y comparación frente a CSP y LDA. Se informaron mejoras en exactitud y F1 sin una cifra comparable en la fuente disponible. La diversidad de conjuntos y clases condiciona la interpretación.
+% VERIFICAR: conjuntos, particiones y métricas en gomez2023estrategia.
+
+En \cite{milanes2021monte} se incorporó dropout de Monte Carlo a una red convolucional para estimar incertidumbre en imaginación motora con BCI IV-2a y IV-2b. La propuesta permitió rechazar predicciones inciertas; el costo de inferencia y la dependencia del protocolo de validación limitan su aplicación.
+% VERIFICAR-FUENTE: conjuntos, protocolo y desempeño en milanes2021monte.
+
+En \cite{gomez2025prediction} se predijeron canales a partir de electrodos centrales mediante regresión Elastic Net antes de CSP y una máquina de soporte vectorial. El anteproyecto informó exactitud media de 78.16\,\% en BCI IV-2a para manos izquierda y derecha; la reconstrucción y el resultado deben contrastarse con el estudio original.
+% VERIFICAR-FUENTE: protocolo y 78.16 % en gomez2025prediction.
+
+\subsection{Antecedentes internacionales}
+La revisión \cite{alsaegh2021review} recopiló estudios de imaginación motora en conjuntos públicos y privados, con filtrado, transformaciones espectrales, CSP y redes convolucionales o híbridas. Informó resultados favorables al aprendizaje profundo en algunos conjuntos; la variación de protocolos impide convertirlos en una comparación uniforme.
+% VERIFICAR: selección y resultados por protocolo en alsaegh2021review.
+
+La revisión \cite{yadav2025decoding} examinó paradigmas de interfaces cerebro-computador (BCI), procesamiento y aplicaciones. Incluyó métodos para señales evocadas y paradigmas híbridos, además de imaginación motora. Sus resultados sintetizan tendencias y no constituyen una comparación experimental única entre arquitecturas.
+% VERIFICAR: criterios y alcance en yadav2025decoding.
+
+En \cite{pfeffer2026transformer} se abordó el bajo rendimiento de usuarios mediante modelos híbridos convolucionales y Transformer, aumentación y evaluación en conjuntos de imaginación motora. El anteproyecto informó resultados para PhysioNet y BCI IV-2a; los protocolos y cifras requieren cotejo antes de compararlos con esta tesis.
+% VERIFICAR-FUENTE: datos, protocolo y desempeño en pfeffer2026transformer.
+
+En \cite{han2026source} se propuso transferencia de estilo para clasificación independiente del sujeto. Sobre BCI IV-2a y CBCIC se usaron representaciones wavelet, agrupamiento contrastivo, transferencia de características y combinación de clasificadores. El anteproyecto informó 67.92\,\% y 72.40\,\% respectivamente en validación dejando un sujeto fuera (\loso{}); la complejidad y las diferencias entre poblaciones condicionan su uso.
+% VERIFICAR-FUENTE: procesamiento, \loso{} y resultados en han2026source.
+
+En \cite{pfeffer2025evolving} se optimizaron redes híbridas mediante algoritmos genéticos y aumentación sobre PhysioNet y BCI IV-2a. Se informó mejora frente a modelos de referencia; el costo de búsqueda y la evaluación fuera de línea limitan la transferencia práctica.
+% VERIFICAR-FUENTE: protocolo y desempeño en pfeffer2025evolving.
+
+En \cite{wang2026diffuser} se empleó difusión condicionada por etiquetas para generar señales de entrenamiento de clasificadores convolucionales e híbridos. El anteproyecto informó mejoras frente al entrenamiento solo con datos reales en BCI IV-2a y PhysioNet. La utilidad de las muestras sintéticas depende de la separación de los datos y del protocolo.
+% VERIFICAR-FUENTE: particiones y mejoras en wang2026diffuser.
+
+En \cite{jiang2024labram} se preentrenó un Transformer con parches EEG enmascarados y se ajustó para tareas posteriores. El anteproyecto informó mejoras en varias tareas con conjuntos heterogéneos; la comparación de imaginación motora entre sujetos depende de los datos y del ajuste específico.
+% VERIFICAR-FUENTE: corpus, tareas y métricas en jiang2024labram.
+
+En \cite{wang2025eegmamba} se propuso un modelo de espacio de estados para EEG con preentrenamiento y evaluación en varias tareas. El anteproyecto informó resultados competitivos y procesamiento eficiente de secuencias; esa configuración preentrenada no equivale al entrenamiento desde cero de esta tesis.
+% VERIFICAR-FUENTE: conjuntos, protocolos y resultados en wang2025eegmamba.
+
+La revisión \cite{abibullaev2023review} examinó Transformers para BCI, sus ventajas y dificultades. La variedad de tareas y particiones impide atribuir a la familia una ventaja universal en imaginación motora.
+% VERIFICAR: alcance y selección en abibullaev2023review.
+
+En \cite{kwon2020} se estudió la clasificación independiente del sujeto con aprendizaje profundo. La comparación entre protocolos individuales y entre sujetos ilustra el problema de transferencia, aunque la diferencia entre protocolos también puede reflejar cambios en el volumen de entrenamiento.
+% VERIFICAR: datos, procesamiento y desempeño en kwon2020.
+
+En \cite{zhu2025hafusenet} se estudió la clasificación de imaginación motora mediante fusión de características. La fuente bibliográfica identifica el método, pero no permite establecer aquí una cifra o protocolo comparable.
+% VERIFICAR: conjuntos, etapas, validación y desempeño en zhu2025hafusenet.
+
+En \cite{huang2023discrepancy} se examinó la discrepancia entre variabilidad intra e inter-sujeto en EEG. La distinción es pertinente para elegir dominios de evaluación; la información disponible no permite equiparar sus resultados con los de este experimento.
+% VERIFICAR: datos, método y resultados en huang2023discrepancy.
+
+En \cite{he2020ea} se propuso alineamiento euclidiano para transferencia en BCI. La transformación de covarianzas constituye una alternativa de adaptación anterior al clasificador, cuya utilidad depende de los datos disponibles del destino.
+% VERIFICAR: conjuntos, protocolo y desempeño en he2020ea.
+
+En \cite{wang2024channelreflection} se propuso aumentación mediante reflexión de canales para imaginación motora. La transformación incorpora conocimiento espacial, pero su efecto depende de la correspondencia entre canales y clases.
+% VERIFICAR: datos, protocolo y desempeño en wang2024channelreflection.
+
+En \cite{song2023conformer} se combinó extracción convolucional con atención para decodificar EEG. Esta arquitectura proporciona una familia híbrida para comparar con convoluciones compactas, aunque los resultados publicados requieren cotejar particiones y preprocesamiento.
+% VERIFICAR: conjuntos, protocolo y desempeño en song2023conformer.
+
+En \cite{li2026eegjepa} se propuso predicción en el espacio latente para preentrenamiento de EEG. El capítulo 5 recoge resultados en BCI IV-2a con cuatro clases y advierte que las líneas base provienen de trabajos anteriores; no se evaluó allí el cambio de protocolo de adquisición.
+% VERIFICAR: corpus, particiones y comparabilidad en li2026eegjepa.
+
+Las revisiones \cite{li2026survey,kuruppu2026fmreview} tratan, respectivamente, la generalización entre sujetos y los modelos fundacionales de EEG. Ambas contextualizan las alternativas de transferencia y sus dificultades; no suministran una evaluación experimental común de las cuatro arquitecturas aquí estudiadas.
+% VERIFICAR: alcance y criterios de li2026survey y kuruppu2026fmreview.
+
+\subsection{Discusión}
+La tabla~\ref{tab:antecedentes-comparacion} resume etapas de estudios para los que el anteproyecto aporta información. Las cifras de fuentes diferentes no son directamente comparables: cambian participantes, clases y validación. Las celdas no especificadas requieren consulta del original.
+\begin{table}[H]
+\centering
+\caption{Comparación de etapas de antecedentes y del presente estudio. Fuente: anteproyecto e informe. NE: no especificado en las fuentes disponibles.}
+\label{tab:antecedentes-comparacion}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{2cm}p{2cm}p{1.2cm}p{1.7cm}p{2cm}p{2cm}p{1.5cm}p{2.3cm}}
+\toprule
+Trabajo & Datos & Sujetos & \hspace{0pt}Validación & \hspace{0pt}Procesamiento & \hspace{0pt}Arquitectura & \hspace{0pt}Preentrenamiento & Métrica y desempeño \\
+\midrule
+\cite{camargo2023prototype} & Propios & 6 & Individual & FIR, CSP & LDA & No & Viabilidad operativa \\
+\cite{gomez2025prediction} & IV-2a & 9 & Individual & Predicción de canales, CSP & Elastic Net, SVM & No & Exactitud 78.16\,\% \\
+\cite{han2026source} & IV-2a, CBCIC & 9, 8 & \loso{} & Wavelet, agrupamiento & Transferencia de estilo & NE & Exactitud 67.92\,\%, 72.40\,\% \\
+\cite{jiang2024labram} & EEG heterogéneo & NE & Varias tareas & Parches enmascarados & Transformer & Sí & Varias métricas; NE por protocolo \\
+Este trabajo & OpenBMI & 54 & \loso{}, 3 semillas & Filtrado común & Cuatro arquitecturas & Solo LaBraM & Exactitudes: 0.761 / 0.747 / 0.755 / 0.715 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+% VERIFICAR-FUENTE: filas de antecedentes de la tabla en los artículos originales.
+
+La brecha abordada es la limitada evidencia comparable de evaluación multiusuario \loso{} de familias diferentes bajo un mismo conjunto y protocolo. Además, una comparación intra-sujeto frente a \loso{} mezcla pertenencia del participante y volumen de entrenamiento. El diseño del capítulo 4 separó la pertenencia de la persona mediante el mismo modelo y examinó por separado el cambio de conjunto y protocolo de adquisición. Este último comprende varios factores y no identifica por sí solo la causa de la degradación.

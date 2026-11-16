@@ -1,0 +1,44 @@
+\chapter{Trabajos futuros}
+\label{cap:trabajos-futuros}
+Las propuestas siguientes responden a los alcances y las limitaciones de la sección~\ref{sec:limitaciones}. Su evaluación deberá mantener separados los datos de selección y de prueba.
+
+\section{Datos}
+\label{sec:tf-datos}
+
+Para ampliar el alcance de la clasificación binaria y de las poblaciones estudiadas, se propone incorporar conjuntos de electroencefalografía (EEG) con más clases y participantes. Se medirían la exactitud balanceada por clase y la variabilidad entre sujetos, con particiones independientes por participante.
+
+Para reducir la imprecisión asociada al único sorteo de sujetos apartados, se propone repetir el experimento en cinco particiones que cubran todos los participantes, con las cuatro arquitecturas y tres semillas. Se estimarían la caída por persona y sus intervalos de incertidumbre, además de su variación entre particiones.
+
+\section{Preprocesamiento}
+\label{sec:tf-preprocesamiento}
+
+Ante el alcance limitado de las ablaciones de subbanda, se propone evaluar la banda mu y beta conjunta en LaBraM y EEGMamba, y en el protocolo de dejar un sujeto fuera (Leave-One-Subject-Out, \loso{}). Se compararían las diferencias pareadas de exactitud frente a las entradas de referencia bajo el mismo régimen de entrenamiento.
+
+Para estudiar la contribución de los electrodos sin introducir información de prueba en la selección, se propone seleccionar canales mediante validación anidada. Se medirían la exactitud en la partición externa, la estabilidad de los canales elegidos y el costo de adquisición frente al conjunto completo.
+
+\section{Modelos}
+\label{sec:tf-modelos}
+
+La comparación de representaciones quedó limitada por las arquitecturas y el preentrenamiento estudiados. Se propone evaluar EEG-JEPA \cite{li2026eegjepa} como representación preentrenada de EEG, con los mismos sujetos y protocolos; se compararían exactitud, degradación entre dominios y costo con las arquitecturas existentes.
+
+Para completar la evaluación de EEGMamba, excluida de robustez e interpretabilidad, se propone ejecutar ambos análisis en Linux con CUDA y la dependencia correspondiente. Se medirían la caída de exactitud ante perturbaciones y los índices de lateralización con los mismos pesos, sujetos y condiciones de las demás arquitecturas.
+
+\section{Entrenamiento y evaluación}
+\label{sec:tf-entrenamiento}
+
+La falta de búsqueda sistemática de hiperparámetros puede afectar el orden de las arquitecturas. Se propone sintonizarlos por modelo mediante validación anidada, incluida la selección de parada, y comparar la exactitud externa y el costo de entrenamiento con las configuraciones actuales.
+
+Para cuantificar la incertidumbre de las variantes evaluadas con una semilla, se propone repetirlas con más semillas, incluidas las adicionales previstas, bajo un régimen coherente con sus bases. Se medirían las diferencias pareadas y su variabilidad; también se evaluaría el ruido en Fourier en \loso{} y, para esa aumentación, la sensibilidad a su amplitud.
+
+\section{Transferencia y despliegue}
+\label{sec:tf-transferencia}
+
+La calibración y el alineamiento transductivo no establecen desempeño en uso prospectivo. Se propone estudiar calibración del modelo transferido y alineamiento con datos disponibles hasta cada instante, evaluados en sesiones posteriores; se medirían exactitud, número de ensayos de calibración y degradación frente a la condición sin adaptación.
+
+Para separar mejor los factores de adquisición, se propone evaluar transferencia entre conjuntos adicionales y protocolos armonizados, junto con una validación entre sujetos dentro del conjunto de destino. Se medirían las caídas de exactitud y sus intervalos por participante, sin atribuir a un único factor los cambios compuestos.
+
+El desempeño fuera de línea no demuestra utilidad en una interfaz con usuarios. Se propone una validación en línea con retroalimentación y sesiones independientes, midiendo exactitud, tasa de comandos correctos y latencia de extremo a extremo.
+
+Para examinar la viabilidad en hardware embebido, se propone portar los modelos y medir memoria, consumo energético y latencia de extremo a extremo. Como referencia, el capítulo~\ref{cap:resultados} informa para inferencia con 62 canales y lote uno latencias medianas en CPU de 2.09 ms para \eegnet{} y 34.04 ms para LaBraM; estas cifras no son mediciones en hardware embebido.
+
+Como líneas abiertas de investigación se plantea estudiar qué propiedades de las representaciones preentrenadas favorecen la generalización entre sujetos y adquisiciones, y bajo qué condiciones la adaptación con datos limitados mejora el desempeño prospectivo. Su examen requiere contrastes controlados, evaluación externa y medidas conjuntas de incertidumbre y recursos.

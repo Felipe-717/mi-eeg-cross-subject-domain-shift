@@ -1,0 +1,37 @@
+protocolo,par,A,B,n,rope,diferencia_media,p_A_mejor,p_equivalentes,p_B_mejor,decision
+within,eegnet-conformer,eegnet,conformer,54,0.01,0.03180555555555555,0.99998,0.0,2e-05,A mejor
+within,eegnet-conformer,eegnet,conformer,54,0.02,0.03180555555555555,0.99918,0.0008,2e-05,A mejor
+within,eegnet-conformer,eegnet,conformer,54,0.03,0.03180555555555555,0.8113,0.1887,0.0,indeciso
+within,eegnet-labram,eegnet,labram,54,0.01,-0.029043209876543217,0.18684,0.0,0.81316,indeciso
+within,eegnet-labram,eegnet,labram,54,0.02,-0.029043209876543217,0.19884,0.0,0.80116,indeciso
+within,eegnet-labram,eegnet,labram,54,0.03,-0.029043209876543217,0.1294,0.01228,0.85832,indeciso
+within,conformer-labram,conformer,labram,54,0.01,-0.06084876543209877,0.00016,0.0,0.99984,B mejor
+within,conformer-labram,conformer,labram,54,0.02,-0.06084876543209877,8e-05,2e-05,0.9999,B mejor
+within,conformer-labram,conformer,labram,54,0.03,-0.06084876543209877,6e-05,0.01068,0.98926,B mejor
+within,eegnet-eegmamba,eegnet,eegmamba,54,0.01,0.06348765432098764,1.0,0.0,0.0,A mejor
+within,eegnet-eegmamba,eegnet,eegmamba,54,0.02,0.06348765432098764,1.0,0.0,0.0,A mejor
+within,eegnet-eegmamba,eegnet,eegmamba,54,0.03,0.06348765432098764,0.99998,2e-05,0.0,A mejor
+within,conformer-eegmamba,conformer,eegmamba,54,0.01,0.03168209876543209,1.0,0.0,0.0,A mejor
+within,conformer-eegmamba,conformer,eegmamba,54,0.02,0.03168209876543209,0.94004,0.05996,0.0,indeciso
+within,conformer-eegmamba,conformer,eegmamba,54,0.03,0.03168209876543209,0.3104,0.6896,0.0,indeciso
+within,labram-eegmamba,labram,eegmamba,54,0.01,0.09253086419753088,1.0,0.0,0.0,A mejor
+within,labram-eegmamba,labram,eegmamba,54,0.02,0.09253086419753088,0.99998,2e-05,0.0,A mejor
+within,labram-eegmamba,labram,eegmamba,54,0.03,0.09253086419753088,0.99892,0.00108,0.0,A mejor
+loso,eegnet-conformer,eegnet,conformer,54,0.01,0.013719135802469126,0.91006,0.06826,0.02168,indeciso
+loso,eegnet-conformer,eegnet,conformer,54,0.02,0.013719135802469126,0.04312,0.95688,0.0,equivalentes
+loso,eegnet-conformer,eegnet,conformer,54,0.03,0.013719135802469126,0.00026,0.99974,0.0,equivalentes
+loso,eegnet-labram,eegnet,labram,54,0.01,0.005679012345678993,0.71888,0.09246,0.18866,indeciso
+loso,eegnet-labram,eegnet,labram,54,0.02,0.005679012345678993,0.00832,0.99164,4e-05,equivalentes
+loso,eegnet-labram,eegnet,labram,54,0.03,0.005679012345678993,0.0,1.0,0.0,equivalentes
+loso,conformer-labram,conformer,labram,54,0.01,-0.008040123456790131,0.10014,0.00084,0.89902,indeciso
+loso,conformer-labram,conformer,labram,54,0.02,-0.008040123456790131,0.00148,0.81354,0.18498,indeciso
+loso,conformer-labram,conformer,labram,54,0.03,-0.008040123456790131,0.0,0.99852,0.00148,equivalentes
+loso,eegnet-eegmamba,eegnet,eegmamba,54,0.01,0.04523148148148148,1.0,0.0,0.0,A mejor
+loso,eegnet-eegmamba,eegnet,eegmamba,54,0.02,0.04523148148148148,0.99998,2e-05,0.0,A mejor
+loso,eegnet-eegmamba,eegnet,eegmamba,54,0.03,0.04523148148148148,0.97998,0.02002,0.0,A mejor
+loso,conformer-eegmamba,conformer,eegmamba,54,0.01,0.031512345679012364,0.99998,0.0,2e-05,A mejor
+loso,conformer-eegmamba,conformer,eegmamba,54,0.02,0.031512345679012364,0.99884,0.00114,2e-05,A mejor
+loso,conformer-eegmamba,conformer,eegmamba,54,0.03,0.031512345679012364,0.86356,0.13642,2e-05,indeciso
+loso,labram-eegmamba,labram,eegmamba,54,0.01,0.0395524691358025,1.0,0.0,0.0,A mejor
+loso,labram-eegmamba,labram,eegmamba,54,0.02,0.0395524691358025,0.99998,2e-05,0.0,A mejor
+loso,labram-eegmamba,labram,eegmamba,54,0.03,0.0395524691358025,0.98328,0.01672,0.0,A mejor

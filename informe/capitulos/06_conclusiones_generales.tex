@@ -1,0 +1,89 @@
+\chapter{Conclusiones generales}
+\label{cap:conclusiones}
+
+El objetivo general fue «Evaluar el desempeño de generalización de máquinas de aprendizaje profundo
+frente al fenómeno de cambio de dominio en sistemas BCI multiusuario de
+imaginación motora, mediante un protocolo de validación inter-sujeto que
+permita la identificación de la arquitectura con mayor robustez». La evaluación permitió
+caracterizar la degradación entre participantes y entre protocolos de adquisición, pero no identificar
+una arquitectura de mayor robustez en todos los criterios. La elección dependió de la métrica,
+el protocolo y las condiciones de evaluación.
+
+\begin{enumerate}
+  \item \textbf{Selección de datos (objetivo~\ref{oe:1}).} Se buscó un conjunto multisujeto
+  de electroencefalografía superficial (sEEG) para imaginación motora. Se seleccionó
+  \openbmi{} como conjunto principal y WBCIC-SHU para validación externa, con las clases
+  de mano izquierda y derecha y los canales comunes. La evaluación incluyó $54$ participantes
+  de \openbmi{} y $51$ de WBCIC-SHU; en este último se utilizó la primera sesión y los $45$
+  canales comunes (sección~\ref{cap:resultados} y capítulo~\ref{cap:metodologia-datos}).
+
+  \item \textbf{Preprocesamiento (objetivo~\ref{oe:2}).} Se requirió eliminar ruido y
+  artefactos, tratar los canales y las bandas y preparar entradas compatibles. Se aplicaron
+  filtrado, limpieza, segmentación y normalización. La selección de canales quedó implícita
+  en las capas espaciales de cada arquitectura; se justificó no efectuar una selección explícita
+  para evitar una decisión previa ajustada a los datos (capítulo~\ref{cap:metodologia-datos}).
+  Las bandas se evaluaron como ablación: en el protocolo intra-sujeto, sobre $54$ participantes
+  y con la semilla $2026$, la banda $\mu+\beta$ se asoció con $+0.0781$ de exactitud en el
+  Conformer frente a su base. El contraste está condicionado al régimen de entrenamiento y
+  las subbandas no se evaluaron en LaBraM ni EEGMamba
+  (sección~\ref{sec:ablaciones-f4}).
+
+  \item \textbf{Arquitecturas (objetivo~\ref{oe:3}).} Se implementaron y configuraron
+  arquitecturas representativas para decodificar imaginación motora: Conformer y EEGMamba se
+  entrenaron desde cero, mientras LaBraM Base recibió ajuste fino completo; \eegnet{} se
+  incorporó como referencia. En validación dejando un sujeto fuera (\loso{}), sobre $54$
+  participantes de \openbmi{} y con la media de las semillas $2026$, $2027$ y $2028$, las
+  exactitudes fueron $0.747$, $0.715$, $0.755$ y $0.761$, respectivamente
+  (sección~\ref{sec:comparacion}). Las semillas no compartieron completamente el régimen de
+  optimización (sección~\ref{sec:semillas-por-arq}).
+
+  \item \textbf{Evaluación comparativa (objetivo~\ref{oe:4}).} Se comparó la generalización
+  inter-sujeto mediante exactitud y un indicador de degradación. El indicador de cambio de
+  dominio propuesto (\dsi{}) comparó participantes vistos y no vistos con los mismos pesos,
+  separando esa diferencia del volumen de entrenamiento. En \loso{}, con $54$ particiones
+  de \openbmi{} y la media de tres semillas, fue de $+0.026$ a $+0.052$; solo LaBraM presentó
+  degradación significativa tras Holm (sección~\ref{sec:dsi-resultados}). La regla aplicada,
+  fijada después del primer análisis, prefirió el menor costo entre arquitecturas equivalentes
+  en desempeño y degradación. Para exactitud \loso{}, sobre $54$ participantes y la media de
+  tres semillas, la prueba bayesiana y TOST con Holm respaldaron la equivalencia por pares de
+  \eegnet{}, Conformer y LaBraM dentro del margen de $\pm 0.03$. Para degradación, con las
+  mismas condiciones, ambas pruebas respaldaron la equivalencia de los seis pares; entre
+  \eegnet{} y LaBraM, la diferencia media fue $-0.021$ y el intervalo bootstrap del
+  $90$\,\% fue $[-0.031, -0.012]$, próximo al límite del margen. Por su menor costo
+  medido, \eegnet{} resultó preferida bajo esta regla. La decisión, aplicada al conjunto
+  principal para las semillas y regímenes evaluados, no establece superioridad universal
+  (secciones~\ref{sec:criterios-adicionales}, \ref{sec:comparacion} y
+  \ref{sec:aplicacion-robustez}).
+\end{enumerate}
+
+La pregunta de investigación planteó cómo determinar la arquitectura de aprendizaje profundo
+con mejor desempeño ante el cambio de dominio en interfaces cerebro-computador (BCI)
+multiusuario de imaginación motora. La respuesta requiere comparar bajo particiones comunes,
+medir la degradación y considerar la incertidumbre y el costo: en las condiciones estudiadas
+se obtuvo una preferencia condicionada por \eegnet{}, sin evidencia para un ganador universal.
+En la transferencia de modelos entrenados con $44$ participantes de \openbmi{} a WBCIC-SHU,
+con la media de tres semillas, la exactitud cayó entre $0.095$ y $0.123$ respecto de los
+$10$ participantes apartados del origen; la diferencia entre esa caída y la atribuida al
+cambio de persona no fue significativa (sección~\ref{sec:descomposicion}).
+
+La contribución principal consistió en distinguir la evaluación entre personas del cambio de
+protocolo de adquisición y en proponer el \dsi{} para comparar sujetos vistos y no vistos
+sin cambiar los pesos. El repositorio documenta el código y los procedimientos de evaluación
+\cite{ayala2026repo}. La comparación común permitió reconocer ventajas relativas: la
+equivalencia práctica en exactitud y degradación y el menor costo favorecieron a \eegnet{}
+bajo la regla aplicada, fijada después del primer análisis para el conjunto principal y los
+regímenes evaluados, mientras otros criterios de robustez favorecieron a otras arquitecturas
+(sección~\ref{sec:aplicacion-robustez}). Las dificultades de interpretación incluyeron la
+selección temprana del modelo intra-sujeto, los cambios de régimen entre semillas y la
+precisión limitada de una sola partición de sujetos apartados. Las ablaciones se limitaron
+a una semilla y el cambio de protocolo agrupó varios factores de adquisición, por lo que sus
+causas individuales no quedaron establecidas (sección~\ref{sec:limitaciones}).
+
+Respecto del anteproyecto, la comparación se concretó con \openbmi{} como conjunto principal,
+WBCIC-SHU como validación externa y \eegnet{} como línea base adicional. El Conformer se
+evaluó sin adaptación de dominio como componente principal; Conformer y EEGMamba se
+entrenaron desde cero y LaBraM Base mediante ajuste fino completo. Se añadieron alineamiento
+euclidiano y calibración con pocos ensayos, y la comparación estadística empleó Wilcoxon con
+corrección de Holm, TOST y remuestreo bootstrap en lugar de la prueba de Friedman con
+comparaciones posteriores prevista inicialmente. Estas decisiones concretaron la ejecución
+de los objetivos.

@@ -1,0 +1,20 @@
+\section{Descripción del conjunto de datos}
+\openbmi{} \cite{lee2019} aportó 54 participantes y dos clases de imaginación de movimiento de mano izquierda y derecha, con 400 ensayos por persona, distribuidos en dos sesiones. En cada sesión intra-sujeto se reservaron 20 ensayos para prueba, 144 para entrenamiento y 36 para validación en cada partición estratificada. En \loso{}, 51 sujetos entrenaron, dos validaron y uno se reservó para prueba. Para la evaluación con sujetos apartados se separaron 44 participantes de 10 de prueba. La transferencia empleó WBCIC-SHU \cite{yang2025wbcic}, con 51 participantes y las mismas clases, usando la primera sesión y los 45 canales comunes. Las características y el reparto completo figuran en el capítulo~\ref{cap:metodologia-datos}, el anexo~\ref{anexo:dataset} y la sección~\ref{sec:protocolos-extra}.
+
+\begin{table}[H]
+\centering
+\caption{Reparto de sujetos y ensayos por protocolo.}
+\label{tab:reparto-protocolos}
+\small
+\begin{tabular}{p{2.7cm}p{3.1cm}p{3.1cm}p{3.1cm}p{1.2cm}}
+\toprule
+\textbf{Protocolo} & \textbf{Entrenamiento} & \textbf{Validación} & \textbf{Prueba} & \textbf{Fuente} \\
+\midrule
+Intra-sujeto, por sesión y partición & 1 sujeto, 144 ensayos & Mismo sujeto, 36 ensayos & Mismo sujeto, 20 ensayos & \ref{sec:within} \\
+\loso{}, por partición & 51 sujetos, 18\,360 ensayos & 2 sujetos, 800 ensayos & 1 sujeto, 400 ensayos & \ref{sec:fase4} \\
+44 más 10 & 44 sujetos, 15\,840 ensayos & Mismos 44 sujetos, 1\,760 ensayos & 10 sujetos, 400 ensayos por sujeto & \ref{sec:protocolos-extra} \\
+Transferencia global & 54 sujetos de \openbmi{}, 19\,440 ensayos & Mismos 54 sujetos, 2\,160 ensayos & 51 sujetos de WBCIC-SHU, 2\,040 ensayos & \ref{sec:protocolos-extra} \\
+Transferencia 44 más 10 & 44 sujetos de \openbmi{}, 15\,840 ensayos & Mismos 44 sujetos, 1\,760 ensayos & 51 sujetos de WBCIC-SHU, 2\,040 ensayos & \ref{sec:protocolos-extra} \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,36 @@
+\section{Marco teórico}
+\subsection{Señal EEG e imaginación motora}
+La electroencefalografía (EEG) superficial registra diferencias de potencial en electrodos del cuero cabelludo. La señal combina actividad cerebral, ruido instrumental y actividad no cerebral; su amplitud y distribución dependen del montaje, la referencia y el estado del participante. La imaginación motora consiste en representar una acción sin ejecutarla y puede modificar la actividad oscilatoria sobre regiones sensoriomotoras.
+
+Los ritmos mu y beta se estudian por sus cambios asociados con la preparación y la imaginación de movimiento. La desincronización relacionada con eventos (ERD) describe una disminución de potencia respecto de una referencia; la sincronización relacionada con eventos (ERS), un aumento. Estas variaciones dependen del tiempo, la frecuencia y la localización, y no constituyen una etiqueta inequívoca de intención para cada ensayo \cite{neuper2006,pfurtscheller1999}.
+
+Los movimientos oculares, musculares y del cuerpo, junto con interferencia eléctrica y electrodos deficientes, pueden alterar la señal. El filtrado y el análisis de componentes independientes pueden reducir parte de la contaminación, sin garantizar que toda actividad residual sea cerebral. Por ello las decisiones de limpieza y segmentación condicionan tanto las representaciones como la evaluación posterior.
+
+\subsection{Interfaces cerebro-computador y cadena clásica}
+Una interfaz cerebro-computador traduce actividad cerebral en señales de control o comunicación \cite{wolpaw2007bci}. En una cadena clásica, el registro se filtra, se segmenta en ensayos y se transforma en características que alimentan un clasificador. Una salida útil requiere además una interpretación de la predicción en el contexto de uso.
+
+CSP construye filtros espaciales que contrastan la varianza de dos clases; las varianzas transformadas constituyen características para clasificación. LDA busca una frontera lineal a partir de la separación entre clases y su variabilidad. Ambas etapas deben ajustarse con datos de entrenamiento para evitar que la prueba influya en la representación. Las redes profundas sustituyen parte de esta extracción manual por parámetros aprendidos, pero no eliminan la necesidad de controlar la partición.
+
+\subsection{Cambio de dominio}
+Un dominio puede describirse por un espacio de entrada $\mathcal X$ y una distribución $P(X)$. Para una tarea de clasificación, también interesa la relación $P(Y\mid X)$ entre señal $X$ y etiqueta $Y$. En transferencia se aprovecha información del dominio fuente en una tarea o dominio destino; la adaptación utiliza información del destino durante el ajuste, mientras la generalización de dominio busca funcionar en destinos no disponibles durante el entrenamiento. Las diferencias entre sujetos pueden afectar tanto la distribución de señales como su relación con la clase \cite{li2026survey,huang2023discrepancy}.
+
+Cada sujeto puede considerarse un dominio, aunque sesiones, dispositivos y protocolos también introducen cambios. En evaluación intra-sujeto se entrena y prueba con particiones distintas de una misma persona. En \loso{} se reserva una persona para prueba y se entrena con otras; por tanto se evalúa una combinación de cambio de sujeto y condiciones de entrenamiento. Comparar sus exactitudes sin controlar el volumen de datos no aísla el efecto de la persona. El índice propuesto en la ecuación~\eqref{eq:dsi} compara $m_{\text{visto}}$ y $m_{\text{no visto}}$ con los mismos pesos; la comparación externa añade diferencias de adquisición.
+
+\subsection{Arquitecturas}
+Una red neuronal convolucional (CNN) aplica filtros compartidos para aprender patrones locales. EEGNet utiliza convoluciones temporales y espaciales separables para una representación compacta de EEG \cite{lawhern2018}. Su capacidad depende de los datos y del ajuste, por lo que la compacidad no garantiza mejor generalización.
+
+La atención combina representaciones según su relación con una consulta; el Transformer emplea autoatención para modelar dependencias entre elementos de una secuencia \cite{vaswani2017attention}. Conformer combina extracción convolucional local y atención, con lo que introduce un sesgo local y una interacción entre representaciones \cite{song2023conformer}. El alcance temporal aprendido no demuestra por sí mismo que el modelo identifique un mecanismo fisiológico.
+
+Los modelos selectivos de espacio de estados, como Mamba, actualizan un estado interno dependiente de la entrada y permiten procesar secuencias sin construir necesariamente una matriz completa de atención \cite{gu2023mamba}. EEGMamba adapta esta familia a EEG \cite{wang2025eegmamba}; en esta tesis se empleó como arquitectura entrenada desde cero, no como modelo fundacional preentrenado.
+
+Un modelo fundacional aprende una representación en un corpus amplio y se adapta después a tareas posteriores. El preentrenamiento autosupervisado obtiene señales de aprendizaje de los propios datos, por ejemplo mediante la predicción de contenido enmascarado. LaBraM utiliza parches EEG y preentrenamiento de este tipo \cite{jiang2024labram}. En esta tesis LaBraM Base fue el único modelo fundacional empleado, con pesos preentrenados y ajuste fino completo. La comparación entre arquitecturas incluye, por tanto, una diferencia de inicialización además de mecanismo.
+
+\subsection{Evaluación estadística}
+La prueba pareada de rangos con signo de Wilcoxon contrasta diferencias entre condiciones emparejadas; la corrección secuencial de Holm controla el error familiar en un conjunto de contrastes \cite{wilcoxon1945,holm1979}. La ausencia de significación no demuestra igualdad. Las dos pruebas unilaterales (TOST) examinan si una diferencia queda dentro de márgenes de equivalencia definidos, y por ello responden una pregunta distinta \cite{schuirmann1987,lakens2017}.
+
+El bootstrap remuestrea unidades de análisis para describir la incertidumbre de una estadística \cite{efron1979}. Una prueba bayesiana con región de equivalencia práctica (ROPE) distribuye probabilidad entre diferencias favorables a cada alternativa y diferencias dentro de un margen considerado pequeño \cite{benavoli2017}. Sus conclusiones dependen de ese margen y del modelo probabilístico.
+
+El anteproyecto proponía Friedman con comparaciones posteriores \cite{demsar2006statistical}. Se emplearon en cambio contrastes pareados concretos con Holm, junto con equivalencia y estimación de incertidumbre, porque las preguntas de interés se formularon por pares y requerían distinguir falta de evidencia de equivalencia práctica. El capítulo 4 especifica familias de contrastes, unidades, márgenes y limitaciones; no se ejecutó Friedman.
+
+\subsection{Discusión}
+La fisiología y los artefactos orientan la selección y limpieza de señales del capítulo 3; la cadena BCI vincula esas señales con la representación de entrada. El cambio de dominio determina las particiones intra-sujeto, \loso{} y externa del capítulo 4. Las cuatro familias definen los clasificadores comparados, mientras las pruebas estadísticas y los indicadores relacionan sus predicciones con diferencias, equivalencia e incertidumbre sin atribuir causalidad a una arquitectura aislada.

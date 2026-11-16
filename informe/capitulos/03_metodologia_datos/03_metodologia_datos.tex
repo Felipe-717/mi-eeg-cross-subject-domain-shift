@@ -1,0 +1,21 @@
+\chapter{Metodología I: datos, preprocesamiento y plataforma de cómputo}
+\label{cap:metodologia-datos}
+\section{Introducción}
+\label{cap:metodologia}
+
+El trabajo se organizó en cuatro fases, una por objetivo específico. El código, los
+resultados por sujeto y por \textit{fold} y la fuente de este documento están disponibles en
+\cite{ayala2026repo}; su contenido se describe en el Anexo~\ref{anx:repositorio}.
+
+En este capítulo se compararon conjuntos públicos de electroencefalografía (EEG) mediante criterios de inclusión para seleccionar los conjuntos principal y externo. Los registros seleccionados se filtraron, limpiaron y segmentaron para obtener las entradas de los modelos, cuyo flujo se presenta en la figura~\ref{fig:pipeline}. También se documentaron la plataforma de cómputo y el software empleados en los protocolos de evaluación.
+
+
+\input{capitulos/03_metodologia_datos/01_datos}
+\input{capitulos/03_metodologia_datos/02_preprocesamiento}
+\input{capitulos/03_metodologia_datos/03_plataforma}
+\section{Conclusiones}
+\begin{itemize}
+  \item La selección identificó a \openbmi{} como conjunto principal, con 54 sujetos y 400 ensayos por sujeto, y a WBCIC-SHU como conjunto externo independiente, con 51 participantes.
+  \item Se conservaron los 62 canales de \openbmi{} y, para la validación externa, los 45 comunes a ambos montajes, sin selección previa por desempeño.
+  \item La verificación de lectura con CSP y LDA obtuvo 0.714 y 0.730 en las dos sesiones de \openbmi{}, frente a 0.701 y 0.722 publicados; el contraste no valida la cadena de preprocesamiento empleada en los modelos.
+\end{itemize}
