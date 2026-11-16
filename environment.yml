@@ -20,5 +20,5 @@ dependencies:
       - matplotlib==3.11.1
       - pytest==9.1.1
       - PyYAML==6.0.3
-# Los pods de ejecucion usaron PyTorch 2.8.0 y CUDA 12.8.
-# El entorno local exportado tiene PyTorch 2.5.1+cu121; safetensors y mamba-ssm no estaban instalados.
+# Pod runs used PyTorch 2.8.0 and CUDA 12.8.
+# The exported local environment has PyTorch 2.5.1+cu121; safetensors and mamba-ssm were not installed.

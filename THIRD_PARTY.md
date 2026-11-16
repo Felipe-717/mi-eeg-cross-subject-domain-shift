@@ -1,22 +1,22 @@
-# Componentes de terceros
+# Third-party components
 
-## Codigo y pesos
+## Code and weights
 
-| Componente | Uso en este repositorio | Archivo | Origen | Licencia |
+| Component | Use in this repository | File | Source | License |
 | --- | --- | --- | --- | --- |
-| LaBraM | Vocabulario de canales y logica de entrada adaptados; arquitectura via braindecode. Se descargan pesos Base (`model.safetensors`) desde el repositorio indicado en `src/training.py`. | `src/adapters.py`, `src/training.py` | [LaBraM](https://github.com/935963004/LaBraM); [checkpoint en Hugging Face](https://huggingface.co/braindecode/labram-pretrained) | MIT en el codigo original; BSD-3-Clause declarada en la tarjeta del checkpoint |
-| EEGMamba | Backbone vendorizado, con bloques mixer adaptados del codigo del proyecto. | `src/eegmamba_vendored.py`, adaptador en `src/adapters.py` | [EEGMamba](https://github.com/wjq-learning/EEGMamba) | MIT |
-| Mamba | Implementacion de bloques state-space y utilidades usadas por el vendorizado EEGMamba. | `src/eegmamba_vendored.py` | [Mamba](https://github.com/state-spaces/mamba) | Apache-2.0 |
-| EEGNet y EEG Conformer | Se usan las implementaciones distribuidas por braindecode; no se encontro codigo copiado de los articulos originales. | `src/training.py` | [braindecode](https://github.com/braindecode/braindecode) | BSD-3-Clause |
-| MNE-Python | API de lectura, transformacion y procesamiento EEG; no se encontro codigo copiado. | `src/`, `scripts/` | [MNE-Python](https://github.com/mne-tools/mne-python) | BSD-3-Clause |
+| LaBraM | Adapted channel vocabulary and input logic; architecture provided through braindecode. Base weights (`model.safetensors`) are downloaded from the repository specified in `src/training.py`. | `src/adapters.py`, `src/training.py` | [LaBraM](https://github.com/935963004/LaBraM); [Hugging Face checkpoint](https://huggingface.co/braindecode/labram-pretrained) | MIT in the original code; BSD-3-Clause declared in the checkpoint card |
+| EEGMamba | Vendored backbone with mixer blocks adapted from the project code. | `src/eegmamba_vendored.py`, adapter in `src/adapters.py` | [EEGMamba](https://github.com/wjq-learning/EEGMamba) | MIT |
+| Mamba | Implementation of state-space blocks and utilities used by vendored EEGMamba. | `src/eegmamba_vendored.py` | [Mamba](https://github.com/state-spaces/mamba) | Apache-2.0 |
+| EEGNet and EEG Conformer | Implementations distributed by braindecode are used; no code copied from the original papers was found. | `src/training.py` | [braindecode](https://github.com/braindecode/braindecode) | BSD-3-Clause |
+| MNE-Python | API for reading, transforming, and processing EEG; no copied code was found. | `src/`, `scripts/` | [MNE-Python](https://github.com/mne-tools/mne-python) | BSD-3-Clause |
 
-La licencia del checkpoint se consulto en la API de Hugging Face el 16-11-2026. Los pesos se descargan en ejecucion con `huggingface_hub`; no estan incluidos en esta publicacion. LaBraM identifica el origen de su vocabulario y convenciones en comentarios de `src/adapters.py`.
+The checkpoint license was checked through the Hugging Face API on 2026-11-16. Weights are downloaded at run time with `huggingface_hub`; they are not included in this publication. LaBraM's channel vocabulary and conventions are attributed in comments in `src/adapters.py`.
 
-## Dependencias principales
+## Main dependencies
 
-Versiones del entorno `eeg` local usado para generar `environment.yml`. Licencias contrastadas con los metadatos/repositorios oficiales.
+Versions from the local `eeg` environment used to generate `environment.yml`. Licenses were checked against official metadata and repositories.
 
-| Paquete | Version local | Licencia |
+| Package | Local version | License |
 | --- | --- | --- |
 | PyTorch (`torch`) | 2.5.1+cu121 | BSD-3-Clause |
 | MNE-Python (`mne`) | 1.12.1 | BSD-3-Clause |
@@ -34,4 +34,4 @@ Versiones del entorno `eeg` local usado para generar `environment.yml`. Licencia
 | pytest | 9.1.1 | MIT |
 | PyYAML | 6.0.3 | MIT |
 
-`safetensors`, `mamba-ssm`, `causal-conv1d` y Triton no estan instalados en el entorno local, aunque se importan en las rutas que cargan LaBraM o EEGMamba. No se les asigna una version local. EEGMamba requiere el stack compatible con Linux y CUDA del pod. Las licencias de dependencias son las de los proyectos aguas arriba; consulte sus avisos al redistribuir binarios.
+`safetensors`, `mamba-ssm`, `causal-conv1d`, and Triton are not installed in the local environment, although they are imported in paths that load LaBraM or EEGMamba. No local version is assigned to them. EEGMamba requires the pod's Linux- and CUDA-compatible stack. Dependency licenses are those of the upstream projects; consult their notices when redistributing binaries.

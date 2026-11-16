@@ -1,84 +1,83 @@
-# Evaluación del desempeño de generalización de máquinas de aprendizaje profundo frente al cambio de dominio en sistemas BCI multiusuario de imaginación motora
+# Generalization performance of deep learning models under domain shift in multi-user motor imagery BCI systems
+
+The thesis report (in Spanish) is in `informe/`.
 
 This master's thesis studies cross-subject domain shift in motor imagery brain-computer interfaces using OpenBMI and external validation on WBCIC-SHU. It compares EEGNet, Conformer, EEGMamba and fully fine-tuned LaBraM Base under within-subject and leave-one-subject-out protocols.
 
-**Autor:** Felipe Ayala Valencia  
-**Director:** Humberto Loaiza Correa  
-**Grupo:** PSI, Escuela de Ingeniería Eléctrica y Electrónica, Universidad del Valle, 2026.
+**Author:** Felipe Ayala Valencia
 
-## Resumen
+**Advisor:** Humberto Loaiza Correa
 
-El cambio de dominio entre sujetos limita la generalización de las interfaces cerebro-computador basadas en imaginación motora.  
-Se estudia OpenBMI, con 54 sujetos, y se emplea WBCIC-SHU para validación externa.  
-EEGNet sirve como referencia; Conformer y EEGMamba se entrenan desde cero.  
-LaBraM Base se evalúa mediante ajuste fino completo.  
-Los protocolos comprenden evaluación intra-sujeto por sesión y validación dejando un sujeto fuera (LOSO).  
-Las comparaciones utilizan Wilcoxon con corrección de Holm, TOST con margen 0.03 y bootstrap.
+**Group:** PSI, School of Electrical and Electronics Engineering, Universidad del Valle, 2026.
 
-## Estructura
+## Abstract
 
-- `src/`: entrenamiento, particiones, adaptadores, aumentación y modelos.
-- `src/datasets/`: carga y definición de OpenBMI, WBCIC y MIND.
-- `scripts/`: entrenamiento, evaluación, análisis estadístico y verificación de cifras; `avance7_*.py` analiza la segunda tanda de experimentos (semillas, ablaciones, alineamiento, calibración y transferencia).
-- `scripts/openbmi/`, `scripts/wbcic/`, `scripts/mind/`: preparación y análisis específicos de cada conjunto.
-- `pod/`: preparación y ejecución en RunPod.
-- `pod/avance_7/`: planificación y ejecución de la segunda tanda de experimentos; `pod/punto6/` y `pod/punto6b/`: transferencia y sujetos reservados.
-- `tests/`: pruebas de particiones, ausencia de fuga y comparación de sujetos vistos y no vistos.
-- `results/`: CSV de experimentos y análisis.
-- `results/avance_7/`: resultados y análisis de la segunda tanda de experimentos; `results/punto6/` y `results/punto6b/`: validación externa y sujetos reservados.
-- `results/pod_*/` y `results/reports/`: resultados anteriores y reportes por conjunto.
-- `informe/`: fuente LaTeX y bibliografía.
-- `informe/preliminares/`, `informe/capitulos/`, `informe/anexos/`, `informe/figuras/` e `informe/herramientas/`: portada y secciones preliminares, texto, anexos, imágenes y herramientas del informe.
+Cross-subject domain shift limits the generalization of motor imagery brain-computer interfaces. This study evaluates OpenBMI, comprising 54 subjects, and uses WBCIC-SHU for external validation. EEGNet serves as the baseline; Conformer and EEGMamba are trained from scratch. LaBraM Base is evaluated with full fine-tuning. The protocols comprise session-wise within-subject evaluation and leave-one-subject-out (LOSO) validation. Comparisons use the Wilcoxon test with Holm correction, TOST with a 0.03 margin, and bootstrap.
 
-## Instalación
+## Repository structure
 
-El entorno se llama `eeg`. Desde la raíz del repositorio:
+- `src/`: training, data splits, adapters, augmentation, and models.
+- `src/datasets/`: data loading and definitions for OpenBMI, WBCIC, and MIND.
+- `scripts/`: training, evaluation, statistical analysis, and verification of the numbers reported in the thesis; `avance7_*.py` analyzes the second experiment batch (folder `avance_7/`), including seeds, ablations, alignment, calibration, and transfer.
+- `scripts/openbmi/`, `scripts/wbcic/`, `scripts/mind/`: dataset-specific preparation and analysis.
+- `pod/`: preparation and runs on RunPod.
+- `pod/avance_7/`: planning and execution of the second experiment batch (folder `avance_7/`); `pod/punto6/` and `pod/punto6b/`: transfer and held-out subjects.
+- `tests/`: tests for data splits, leakage prevention, and comparison of seen and unseen subjects.
+- `results/`: experiment and analysis CSV files.
+- `results/avance_7/`: results and analysis for the second experiment batch (folder `avance_7/`); `results/punto6/` and `results/punto6b/`: external validation and held-out subjects.
+- `results/pod_*/` and `results/reports/`: earlier results and dataset reports.
+- `informe/`: LaTeX source and bibliography.
+- `informe/preliminares/`, `informe/capitulos/`, `informe/anexos/`, `informe/figuras/`, and `informe/herramientas/`: cover and preliminary sections, text, appendices, images, and report tools.
+
+## Installation
+
+The environment is named `eeg`. From the repository root:
 
 ```bash
 conda env create -f environment.yml
 conda activate eeg
 ```
 
-`environment.yml` refleja el entorno de desarrollo (PyTorch 2.5.1 con CUDA 12.1). Los entrenamientos en RunPod usaron PyTorch 2.8.0 con CUDA 12.8; EEGMamba requiere además `mamba-ssm` y `causal-conv1d`, que solo se instalan en Linux con GPU.
+`environment.yml` reflects the development environment (PyTorch 2.5.1 with CUDA 12.1). RunPod training used PyTorch 2.8.0 with CUDA 12.8. EEGMamba also requires `mamba-ssm` and `causal-conv1d`, which are installed only on Linux with a GPU.
 
-## Datos
+## Data
 
-Los datos no se redistribuyen en este repositorio. OpenBMI se obtiene de su [fuente original](http://gigadb.org/dataset/100542); véase Lee et al. (2019), *GigaScience*, [doi:10.1093/gigascience/giz002](https://doi.org/10.1093/gigascience/giz002). WBCIC-SHU se descarga con `python scripts/wbcic/descargar.py`. Las cachés públicas con ICA están en [Felipe717/openbmi-ica](https://huggingface.co/datasets/Felipe717/openbmi-ica) y [Felipe717/wbcic-2c-ica](https://huggingface.co/datasets/Felipe717/wbcic-2c-ica). Configure la ruta de la caché con `--cache` al entrenar.
+The datasets are not redistributed in this repository. OpenBMI is available from its [original source](http://gigadb.org/dataset/100542); see Lee et al. (2019), *GigaScience*, [doi:10.1093/gigascience/giz002](https://doi.org/10.1093/gigascience/giz002). Download WBCIC-SHU with `python scripts/wbcic/descargar.py`. Public ICA caches are available at [Felipe717/openbmi-ica](https://huggingface.co/datasets/Felipe717/openbmi-ica) and [Felipe717/wbcic-2c-ica](https://huggingface.co/datasets/Felipe717/wbcic-2c-ica). Set the cache path with `--cache` when training.
 
-## Reproducción
+## Reproduction
 
-Desde `publicacion/`, con el entorno activado y las cachés preparadas. Los entrenamientos siguientes son ejemplos de los protocolos; seleccione la arquitectura con `--model` y la ruta local de la caché con `--cache`. Las ejecuciones existentes se reanudan según su identificador.
+From the repository root, with the environment activated and caches prepared. The following training commands illustrate the protocols. Select the architecture with `--model` and the local cache path with `--cache`. Existing runs resume according to their identifier.
 
-| Experimento | Comando | Salida en `results/` |
+| Experiment | Command | Output in `results/` |
 | --- | --- | --- |
-| Intra-sujeto por sesión | `python scripts/train_baseline.py --dataset openbmi --mode within --model eegnet --channels completo --per-session --cache RUTA_CACHE` | `reports/openbmi/baseline_eegnet_within_*.csv` |
+| Session-wise within-subject | `python scripts/train_baseline.py --dataset openbmi --mode within --model eegnet --channels completo --per-session --cache RUTA_CACHE` | `reports/openbmi/baseline_eegnet_within_*.csv` |
 | LOSO | `python scripts/train_baseline.py --dataset openbmi --mode loso --model eegnet --channels completo --cache RUTA_CACHE` | `reports/openbmi/baseline_eegnet_loso_*.csv` |
-| Plan de la segunda tanda | `python pod/avance_7/avance_7.py --plan` | Solo muestra el plan; no genera resultados. |
-| Ejecución de la segunda tanda en el pod | `python pod/avance_7/avance_7.py` | `avance_7/`, incluidos estado, registros y reportes. |
-| Análisis de calibración few-shot | `python scripts/avance7_fewshot.py` | `avance_7/analisis/fewshot_*.csv` |
-| Análisis de transferencia | `python scripts/avance7_transferencia.py` | `avance_7/analisis/transf_*.csv` |
-| Análisis de semillas | `python scripts/avance7_semillas.py` | `avance_7/analisis/semillas_*.csv` y `tres_semillas_*.csv` |
+| Second experiment batch (folder `avance_7/`) plan | `python pod/avance_7/avance_7.py --plan` | Displays the plan only; produces no results. |
+| Second experiment batch (folder `avance_7/`) run on the pod | `python pod/avance_7/avance_7.py` | `avance_7/`, including state, logs, and reports. |
+| Few-shot calibration analysis | `python scripts/avance7_fewshot.py` | `avance_7/analisis/fewshot_*.csv` |
+| Transfer analysis | `python scripts/avance7_transferencia.py` | `avance_7/analisis/transf_*.csv` |
+| Seed analysis | `python scripts/avance7_semillas.py` | `avance_7/analisis/semillas_*.csv` and `tres_semillas_*.csv` |
 
-Los análisis requieren los CSV de entrada correspondientes. El planificador utiliza rutas y configuración del pod; véase `pod/avance_7/avance_7.py` para las fases, semillas y parámetros específicos de cada arquitectura.
+The analyses require the corresponding input CSV files. The scheduler uses pod paths and configuration; see `pod/avance_7/avance_7.py` for the phases, seeds, and architecture-specific parameters.
 
-## Verificación de cifras
+## Figure verification
 
-Desde `publicacion/`:
+From the repository root:
 
 ```bash
 python scripts/verificar_cifras.py
 python scripts/verificar_cifras.py --avance7
 ```
 
-Se esperan, respectivamente, 195 y 3608 cifras OK.
+The expected counts are 195 and 3608 verified figures, respectively.
 
 ## RunPod
 
-`pod/` contiene scripts para preparar y ejecutar los trabajos. Las rutas son las del contenedor, como `/root/ws` y `/workspace`; adapte las rutas de datos y de trabajo al entorno utilizado. Consulte `pod/README.md` y el plan del avance 7 antes de ejecutar.
+`pod/` contains scripts for preparing and running jobs. Paths are container paths such as `/root/ws` and `/workspace`; adapt the data and working paths to the environment in use. See `pod/README.md` and the plan in `avance_7/` before running.
 
-## Informe
+## Thesis report
 
-Desde `informe/`, con una distribución LaTeX y Biber instalados:
+From `informe/`, with a LaTeX distribution and Biber installed:
 
 ```bash
 pdflatex main.tex
@@ -87,9 +86,9 @@ pdflatex main.tex
 pdflatex main.tex
 ```
 
-## Licencia y cita
+## License and citation
 
-El código se distribuye bajo la licencia MIT; véase [LICENSE](LICENSE). Los componentes de terceros se documentan en [THIRD_PARTY.md](THIRD_PARTY.md).
+The code is distributed under the MIT License; see [LICENSE](LICENSE). Third-party components are documented in [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ```bibtex
 @mastersthesis{ayala2026generalizacion,
@@ -97,6 +96,7 @@ El código se distribuye bajo la licencia MIT; véase [LICENSE](LICENSE). Los co
   title = {Evaluación del desempeño de generalización de máquinas de aprendizaje profundo frente al cambio de dominio en sistemas BCI multiusuario de imaginación motora},
   school = {Universidad del Valle},
   year = {2026},
-  type = {Tesis de maestría}
+  type = {Master's thesis},
+  note = {Original title in Spanish}
 }
 ```

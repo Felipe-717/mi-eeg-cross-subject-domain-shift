@@ -1,5 +1,5 @@
-# Informe
+# Thesis report
 
-Compilar desde esta carpeta con `latexmk -pdf main.tex` y biber.
+Compile from this directory with `latexmk -pdf main.tex` and Biber.
 
-`main.tex` ordena el documento, `preambulo.tex` contiene la configuración, `preliminares/` la portada y los apartados pendientes, `capitulos/` el texto, `anexos/` la ficha, `figuras/` las imágenes y `referencias.bib` la bibliografía.
+`main.tex` orders the document; `preambulo.tex` contains the configuration; `preliminares/` contains the cover and pending sections; `capitulos/` contains the text; `anexos/` contains appendices; `figuras/` contains the images; and `referencias.bib` contains the bibliography.

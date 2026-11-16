@@ -1,148 +1,148 @@
-# `pod/` — todo lo que va a la nube
+# `pod/`: RunPod workflows
 
-Ejecución en RunPod: preparar el entorno, regenerar el caché desde cero, **verificar
-que reproduce la Fase 2**, y medir cuánto cuesta de verdad entrenar.
+Run on RunPod: prepare the environment, rebuild the cache from scratch, **verify
+that it reproduces Phase 2**, and measure the actual training cost.
 
-Se regenera allí en lugar de subirlo porque **el pod descarga a velocidad de centro de
-datos**. Tu internet solo mueve los CSV de métricas, que son kilobytes.
+The cache is rebuilt there instead of being uploaded because **the pod downloads at
+data-center speeds**. Your internet connection only transfers metric CSV files, which are kilobytes.
 
 ---
 
-## Modelo de costes — leer una vez
+## Cost model: read once
 
-**Se cobra por segundo mientras el pod está ENCENDIDO**, esté ocupado o no. Un pod
-inactivo cuesta lo mismo que uno al 100 %.
+**Charges accrue every second while the pod is RUNNING**, whether it is busy or not. An
+idle pod costs the same as one at 100% utilization.
 
-> **Los comandos son gratis. El pod olvidado encendido, no.** No te cortes en pedir
-> comprobaciones; lo que hay que vigilar es apagar.
+> **Commands are free. An idle pod left running is not.** Run checks as needed; remember
+> to shut the pod down.
 
-| acción | GPU | disco |
+| action | GPU | disk |
 |---|---|---|
-| running | se cobra | $0.10/GB/mes |
-| **stopped** | no | **$0.20/GB/mes — el doble** |
-| terminated | no | no, pero **`/workspace` se borra** |
+| running | charged | $0.10/GB/month |
+| **stopped** | no | **$0.20/GB/month, twice as much** |
+| terminated | no | no, but **`/workspace` is deleted** |
 
-**Parar sale más caro que destruir**, y no protege: si el saldo llega a $0, los pods sin
-network volume se terminan y los datos no se recuperan. La regla es **destruir, no
-parar** — y por eso el caché tiene que salir del pod antes (fase `export`).
+**Stopping costs more than terminating**, and does not protect data: if the balance reaches $0, pods without a
+network volume are terminated and their data cannot be recovered. The rule is **terminate, do not
+stop**; therefore, export the cache from the pod first (the `export` phase).
 
-**GPU recomendada: A40 48 GB (~$0.44/h).** Es Ampere `sm_86`, la misma arquitectura que
-la RTX 3050 local, así que `mamba-ssm` compila y torch cu121 funciona sin tocar nada.
-Una H100 con EEGNet (2.898 parámetros) es tirar dinero.
+**Recommended GPU: A40 48 GB (~$0.44/h).** It uses Ampere `sm_86`, the same architecture as
+the local RTX 3050, so `mamba-ssm` compiles and torch cu121 works without changes.
+An H100 for EEGNet (2,898 parameters) is not cost-effective.
 
 ---
 
-## Qué sobrevive y qué no
+## Persistent and ephemeral storage
 
-| ruta | disco | tras *stop* | tras *terminate* |
+| path | disk | after *stop* | after *terminate* |
 |---|---|:--:|:--:|
-| `/workspace/**` | volume | ✅ | ❌ **se borra** |
-| todo lo demás (`/`, `~`, `/tmp`, `/raw`) | container | ❌ | ❌ |
+| `/workspace/**` | volume | ✅ | ❌ **deleted** |
+| all other paths (`/`, `~`, `/tmp`, `/raw`) | container | ❌ | ❌ |
 
 ```
-/workspace/tesis/     código                    persiste hasta terminate
-/workspace/venv/      entorno virtual           persiste hasta terminate
-/workspace/cache/     caché procesado           persiste hasta terminate
-/workspace/results/   CSV de métricas           persiste hasta terminate
-/workspace/logs/      logs de los procesos      persiste hasta terminate
+/workspace/tesis/     code                      persists until terminate
+/workspace/venv/      virtual environment       persists until terminate
+/workspace/cache/     processed cache           persists until terminate
+/workspace/results/   metric CSV files          persists until terminate
+/workspace/logs/      process logs              persists until terminate
 
-/raw/mne_data/        crudo de MOABB, decenas GB   EFÍMERO, y así lo queremos
-~/.cache/             cachés de librerías          efímero
+/raw/mne_data/        raw MOABB data, tens of GB   EPHEMERAL, as intended
+~/.cache/             library caches              ephemeral
 ```
 
-Dos trampas que se derivan:
+Two implications follow:
 
-- **`pip install` no sobrevive a un stop** (escribe en el Python del sistema, fuera de
-  `/workspace`). Por eso `setup.sh` crea el entorno virtual **dentro** de `/workspace`.
-- **Los directorios por defecto de MNE y HF son efímeros.** `env.sh` los redirige.
+- **`pip install` does not survive a stop** (it writes to the system Python outside
+  `/workspace`). Therefore, `setup.sh` creates the virtual environment **inside** `/workspace`.
+- **MNE and HF default directories are ephemeral.** `env.sh` redirects them.
 
 ---
 
-## Primera sesión
+## First session
 
 ```bash
-# 1. en tu portátil: subir el repo (o clonar en el pod con REPO_URL)
+# 1. on your laptop: upload the repository (or clone it on the pod with REPO_URL)
 scp -P <puerto> -r . root@<ip>:/workspace/tesis
 
-# 2. en el pod
+# 2. on the pod
 bash pod/setup.sh
 source /workspace/env.sh
 
-# 3. todo de una vez (~2 h, ~$0.90 en A40)
+# 3. run all phases (~2 h, ~$0.90 on an A40)
 python pod/run.py --fase gpu download cache verify export bench --hf-repo usuario/openbmi-ica
 ```
 
-| fase | qué hace | tiempo |
+| phase | operation | time |
 |---|---|---|
-| `gpu` | verifica tarjeta, arquitectura y VRAM; **avisa si está sobredimensionada** | seg |
-| `download` | MOABB, 54 sujetos, reanudable | ~20-30 min |
-| `cache` | preprocesado + ICA, **paralelo por sujeto** | ~30 min |
-| `verify` | **¿reproduce la Fase 2?** | ~5 min |
-| `export` | consolida a fp16 (2.68 GB) y sube a HF | ~5 min |
-| `bench` | mide 1 fold LOSO y 1 sujeto within | ~30 min |
+| `gpu` | checks GPU, architecture, and VRAM; **warns if over-provisioned** | sec |
+| `download` | MOABB, 54 subjects, resumable | ~20-30 min |
+| `cache` | preprocessing + ICA, **parallel by subject** | ~30 min |
+| `verify` | **Does it reproduce Phase 2?** | ~5 min |
+| `export` | consolidates to fp16 (2.68 GB) and uploads to HF | ~5 min |
+| `bench` | measures 1 LOSO fold and 1 within-subject participant | ~30 min |
 
-Todas son repetibles: `download` y `cache` saltan lo hecho, `verify` no escribe nada.
+All phases can be rerun: `download` and `cache` skip completed work; `verify` writes no files.
 
-### Sesiones siguientes
+### Subsequent sessions
 
 ```bash
 bash pod/setup.sh && source /workspace/env.sh
 huggingface-cli download usuario/openbmi-ica --repo-type dataset --local-dir /workspace/cache
 ```
 
-Bajar 2.68 GB son un par de minutos y ya se entrena.
+Downloading 2.68 GB takes a few minutes; training can then begin.
 
 ---
 
-## La fase `verify` no se salta
+## Do not skip the `verify` phase
 
-Si se reconstruye el caché en otra máquina, **hay que demostrar que es el mismo** que el
-validado en local, o toda la Fase 2 queda en el aire.
+If the cache is rebuilt on another machine, **verify that it matches** the locally
+validated cache; otherwise, the Phase 2 results are not reproducible.
 
-Comprueba tres cosas: integridad (54 sujetos, 400×62, balanceados, sin NaN), que el
-`cfg_hash` sea **`6391bc7fe8d4`**, y que el Control A reproduzca valores conocidos:
+Check three items: integrity (54 subjects, 400×62, balanced, no NaNs), that
+`cfg_hash` is **`6391bc7fe8d4`**, and that Control A reproduces known values:
 
-| sujeto | proxy EOG | motor | por qué este sujeto |
+| subject | EOG proxy | motor imagery | rationale |
 |---|---|---|---|
-| sub-29 | 0.705 | 0.943 | muscular irreducible: debe **seguir alto** |
-| sub-04 | 0.518 | 0.608 | ocular resuelto por el ICA |
-| sub-35 | 0.543 | 0.608 | ocular resuelto |
-| sub-01 | 0.478 | 0.808 | limpio: control negativo, no debe moverse |
+| sub-29 | 0.705 | 0.943 | irreducible muscle activity: should **remain high** |
+| sub-04 | 0.518 | 0.608 | ocular artifact removed by ICA |
+| sub-35 | 0.543 | 0.608 | ocular artifact removed |
+| sub-01 | 0.478 | 0.808 | clean: negative control, should remain stable |
 
-Tolerancia ±0.03. **El ICA es estocástico**: fijamos `random_state`, pero una versión
-distinta de `mne` o `mne-icalabel` puede converger a otros componentes y dar otros
-números *aunque el hash coincida*. Por eso `requirements.txt` fija versiones exactas y
-`verify` mide el resultado, no solo la configuración.
+Tolerance: ±0.03. **ICA is stochastic**: `random_state` is fixed, but a different version
+of `mne` or `mne-icalabel` may converge to different components and produce different
+values *even when the hash matches*. Therefore, `requirements.txt` pins exact versions and
+`verify` measures the result, not only the configuration.
 
-Si falla, el script **se detiene a propósito**. `--seguir-si-falla-verify` existe para
-depurar, no para producir resultados de tesis.
-
----
-
-## Qué esperar de `bench`
-
-Es la fase que convierte estimaciones en datos. Mide un fold LOSO real (53 sujetos de
-entrenamiento) y un sujeto de within, y extrapola a las combinaciones que importan.
-
-Con esos dos números se deciden **GPU, número de folds y presupuesto**. Hasta entonces
-todo lo que hemos dicho sobre horas y coste son extrapolaciones de una regla de tres
-sobre un LOSO de 6 sujetos, y pueden estar equivocadas por un factor de dos.
-
-Las cifras que imprime son **secuenciales**. EEGNet no satura una GPU grande, así que
-con folds en paralelo bajan bastante — pero eso se decide después de ver el número.
+If verification fails, the script **stops intentionally**. `--seguir-si-falla-verify` is
+for debugging, not for producing thesis results.
 
 ---
 
-## Lo que todavía NO está aquí
+## What to expect from `bench`
 
-Las fases `within` y `loso` de producción **no se han incluido a propósito**: dependen
-de dos decisiones pendientes del director.
+This phase turns estimates into measurements. It measures one actual LOSO fold (53 training
+subjects) and one within-subject participant, then extrapolates to the relevant combinations.
 
-- **Definición del DSI (H2).** La propuesta es medir *sujeto visto vs no visto con los
-  mismos datos*, lo que exige un tercer conjunto de evaluación (10 % reservado de cada
-  sujeto de entrenamiento, estratificado por clase y sesión). Implementarlo antes de que
-  se apruebe sería construir sobre una definición que puede cambiar.
-- **Alcance del LOSO.** 18 folds estratificados frente a 54 completos.
+These two measurements inform **GPU, number of folds, and budget**. Until then,
+estimates of duration and cost extrapolate linearly from a six-subject LOSO run and may be
+off by a factor of two.
 
-`bench` no depende de ninguna de las dos: mide el coste de un fold con el esquema
-actual, y el tiempo no cambia por añadir un conjunto de evaluación más.
+The reported estimates are **sequential**. EEGNet does not saturate a large GPU, so
+parallel folds may reduce total time substantially; decide after seeing the measurements.
+
+---
+
+## Not yet included
+
+The production `within` and `loso` phases are **intentionally not included**: they depend
+on two decisions pending from the advisor.
+
+- **DSI definition (H2).** The proposal is to measure *seen versus unseen subjects using the
+  same data*, which requires a third evaluation set (10% reserved from each
+  training subject, stratified by class and session). Implementing it before approval
+  would rely on a definition that may change.
+- **LOSO scope.** 18 stratified folds versus all 54 folds.
+
+`bench` does not depend on either decision: it measures the cost of one fold under the
+current design, and adding another evaluation set does not change the runtime.
